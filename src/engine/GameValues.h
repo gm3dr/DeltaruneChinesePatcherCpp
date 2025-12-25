@@ -8,7 +8,7 @@ inline const nlohmann::json defaultSettings = {
     {"baseWidth", 960},
     {"baseHeight", 720},
     {"qqGroupCode", "1033065757"},
-    {"mainFont", "font/main.ttf"},
+    {"mainFont", "external/main.ttf"},
     {"mainFontSize", 32},
     {"deltaruneAppId", "1671210"},
     {"deltaruneDepotId", "1671212"},

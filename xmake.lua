@@ -23,7 +23,7 @@ target("deltarune_cnpatcher")
         os.cp(path.join(os.projectdir(), "font"), outdir)
         os.cp(path.join(os.projectdir(), "external"), outdir)
         os.cp(path.join(os.projectdir(), "image"), outdir)
-     --   os.cp(path.join(os.projectdir(), "lang"), outdir)
+        os.cp(path.join(os.projectdir(), "lang"), outdir)
         os.cp(path.join(os.projectdir(), "readme*.txt"), outdir)
     end)
 

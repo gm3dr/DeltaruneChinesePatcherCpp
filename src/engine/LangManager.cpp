@@ -45,7 +45,7 @@ void LangManager::Cleanup() {
 bool LangManager::LoadFont(GameConfig &settings) {
   LogManager::Info("[Lang] Loading font...");
 
-  fs::path charsetPath = fs::path("font") / "charset.txt";
+  fs::path charsetPath = fs::path("lang") / "charset.txt";
   if (!fs::exists(charsetPath)) {
     LogManager::Critical("[Lang] Charset file missing: " +
                          charsetPath.string());
