@@ -1,44 +1,50 @@
 ﻿#ifndef DOWNLOAD_MANAGER_H
 #define DOWNLOAD_MANAGER_H
 
-#include <functional>
-#include <mutex>
+#include "cpr/error.h"
+#include "cpr/cpr.h"
 #include <string>
-#include <unordered_map>
+#include <thread>
 
-struct Task {
-  enum class DownloadState { RUNNING, FINISHED, FAILED };
-
-  int id;
-  DownloadState state = DownloadState::RUNNING;
-  int progress = 0;
-  std::string result;
-
-  int retryCount = 0;
-  int maxRetries = 0;
-
-  std::function<void(int, const std::string &)> onSuccess;
-  std::function<void(int, const std::string &)> onError;
-};
-
-class DownloadManager {
+class DownloadTask{
+  std::jthread impl;
+  DownloadTask(const DownloadTask&) = delete;
+  DownloadTask(DownloadTask&&) = delete;
 public:
-  DownloadManager() = delete;
-
-  static int CreateTask(const std::string &url,
-                        std::function<void(int, const std::string &)> onSuccess,
-                        std::function<void(int, const std::string &)> onError,
-                        int maxRetries = 3);
-
-  static bool GetProgress(int id, int &outProgress);
-  static void Cancel(int id);
-
-private:
-  static void StartTask(int id, const std::string &url);
-
-  static std::unordered_map<int, Task> tasks;
-  static std::mutex mtx;
-  static int nextId;
+  enum class DownloadState { RUNNING, FINISHED, FAILED } state;
+  int progress;
+  std::string result;
+  template<typename OnSuccess, typename OnError>
+  DownloadTask(const std::string& url, OnSuccess onSuccess, OnError onError, int maxRetries = 3){
+    progress = 0;
+    state = DownloadState::RUNNING;
+    impl = std::jthread([=](std::stop_token stoken){
+      for(int retry = 0;; retry++) {
+        cpr::Response r = cpr::Get(cpr::Url(url), cpr::ProgressCallback(
+          [this, &stoken](size_t total, size_t now, size_t, size_t, intptr_t) {
+            if (total == 0 || stoken.stop_requested()) {
+              return false;
+            }
+            progress = now * 100 / total;
+            return true;
+          })
+        );
+        if (stoken.stop_requested()) {
+          onError("Download task cancelled.");
+          state = DownloadState::FAILED;
+          return;
+        } else if (r.error.code == cpr::ErrorCode::OK && r.status_code == 200){
+          onSuccess(result);
+          state = DownloadState::FINISHED;
+          return;
+        } else if (++retry == maxRetries) {
+          onError("HTTP error: " + std::to_string(r.status_code) + ", please check your network, or download the offline patch.");
+          state = DownloadState::FAILED;
+          return;
+        }
+      }
+    });
+  }
+  void Cancel() { impl.request_stop(); }
 };
-
 #endif

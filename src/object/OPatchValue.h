@@ -2,7 +2,8 @@
 #define O_CHECK_TOOL
 #include "../engine/GameObject.h"
 #include "../engine/GameConfig.h"
-
+#include "../engine/DownloadManager.h"
+#include <memory>
 class OPatchValue : GameObject {
 public:
   enum class PatchValueState { NotReady, Ready, Failed };
@@ -14,6 +15,7 @@ public:
   std::string GetValue(std::string key);
 
 private:
+  std::unique_ptr<DownloadTask> downloadTask;
   PatchValueState currentState = PatchValueState::NotReady;
   GameConfig config;
 };

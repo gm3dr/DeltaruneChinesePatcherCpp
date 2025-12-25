@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
-
+#include <memory>
 namespace fs = std::filesystem;
 OPatchValue::PatchValueState OPatchValue::GetState() { return currentState; }
 
@@ -53,62 +53,61 @@ bool OPatchValue::Download() {
       "/latest/" + fileName;
 
   LogManager::Info("[PatchValue] Downloading from: " + url);
+  downloadTask = std::make_unique<DownloadTask>(
+    url,
 
-  bool taskCreated = DownloadManager::CreateTask(
-      url,
+    [this, url](const std::string content) {
+      fs::path filePath =
+          fs::path("patch") /
+          ("value-" + GameManager::Get()->GetCurrentLanguage() + ".json");
 
-      [this, url](int, const std::string content) {
-        fs::path filePath =
-            fs::path("patch") /
-            ("value-" + GameManager::Get()->GetCurrentLanguage() + ".json");
+      std::filesystem::create_directories(filePath.parent_path());
 
-        std::filesystem::create_directories(filePath.parent_path());
+      std::ofstream outFile(filePath, std::ios::binary);
+      if (outFile) {
+        outFile << content;
+        outFile.close();
 
-        std::ofstream outFile(filePath, std::ios::binary);
-        if (outFile) {
-          outFile << content;
-          outFile.close();
+        LogManager::Info("[PatchValue] Downloaded and saved to: " +
+                          filePath.string());
 
-          LogManager::Info("[PatchValue] Downloaded and saved to: " +
-                           filePath.string());
-
-          config.SetFilePath(filePath.string());
-          if (config.Load()) {
-            LogManager::Info("[PatchValue] Patch value loaded successfully.");
-            currentState = PatchValueState::Ready;
-          } else {
-            LogManager::Error("[PatchValue] Failed to parse downloaded file.");
-            currentState = PatchValueState::Failed;
-          }
+        config.SetFilePath(filePath.string());
+        if (config.Load()) {
+          LogManager::Info("[PatchValue] Patch value loaded successfully.");
+          currentState = PatchValueState::Ready;
         } else {
-          LogManager::Error("[PatchValue] Failed to write file: " +
-                            filePath.string());
-          LogManager::Warning("[PatchValue] Patch validation will be skipped.");
-          LogManager::Info("[PatchValue] You can manually download from: " +
-                           url);
-          LogManager::Info("[PatchValue] And place it at: " +
-                           filePath.string());
-
+          LogManager::Error("[PatchValue] Failed to parse downloaded file.");
           currentState = PatchValueState::Failed;
         }
-      },
-
-      [this, url](int, const std::string errorMessage) {
-        fs::path filePath =
-            fs::path("patch") /
-            ("value-" + GameManager::Get()->GetCurrentLanguage() + ".json");
-
-        LogManager::Error("[PatchValue] Download failed: " + errorMessage);
+      } else {
+        LogManager::Error("[PatchValue] Failed to write file: " +
+                          filePath.string());
         LogManager::Warning("[PatchValue] Patch validation will be skipped.");
-        LogManager::Info("[PatchValue] You can manually download from: " + url);
-        LogManager::Info("[PatchValue] And place it at: " + filePath.string());
-        currentState = PatchValueState::Failed;
-      });
+        LogManager::Info("[PatchValue] You can manually download from: " +
+                          url);
+        LogManager::Info("[PatchValue] And place it at: " +
+                          filePath.string());
 
-  if (!taskCreated) {
+        currentState = PatchValueState::Failed;
+      }
+    },
+
+    [this, url](const std::string errorMessage) {
+      fs::path filePath =
+          fs::path("patch") /
+          ("value-" + GameManager::Get()->GetCurrentLanguage() + ".json");
+
+      LogManager::Error("[PatchValue] Download failed: " + errorMessage);
+      LogManager::Warning("[PatchValue] Patch validation will be skipped.");
+      LogManager::Info("[PatchValue] You can manually download from: " + url);
+      LogManager::Info("[PatchValue] And place it at: " + filePath.string());
+      currentState = PatchValueState::Failed;
+    }
+  );
+  if(!downloadTask){
     LogManager::Error("[PatchValue] Failed to create download task.");
     currentState = PatchValueState::Failed;
+    return false;
   }
-
-  return taskCreated;
+  return true;
 }
