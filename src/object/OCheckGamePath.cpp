@@ -107,7 +107,7 @@ std::string OCheckGamePath::AutoDetectPath() {
 
 void OCheckGamePath::Update(float dt) {
   (void)dt;
-  if (pending) {
+  if (pending && patchValue->GetState() != OPatchValue::PatchValueState::NotReady) {
     HandleValidateResult(pendingPath);
   }
 }
@@ -186,11 +186,6 @@ OCheckGamePath::ValidatePath(const std::string &path) {
   }
 
   auto patchState = patchValue->GetState();
-  if (patchState == OPatchValue::PatchValueState::NotReady) {
-    LogManager::Info("[GamePath] Patch value not ready, validation pending.");
-    return PathState::InvalidPatchValueNotReady;
-  }
-
   std::string appId =
       GameManager::Get()->Settings().Get<std::string>("deltaruneAppId");
 

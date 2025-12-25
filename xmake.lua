@@ -20,7 +20,6 @@ target("deltarune_cnpatcher")
     end
     after_build(function (target)
         local outdir = target:targetdir()
-        os.cp(path.join(os.projectdir(), "font"), outdir)
         os.cp(path.join(os.projectdir(), "external"), outdir)
         os.cp(path.join(os.projectdir(), "image"), outdir)
         os.cp(path.join(os.projectdir(), "lang"), outdir)
