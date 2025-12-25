@@ -3,7 +3,7 @@
 #include <nlohmann/json.hpp>
 namespace Global {
 inline const nlohmann::json defaultSettings = {
-    {"patcherVersion", "0.1.0"},
+    {"patcherVersion", "0.9.0"},
     {"displayLanguage", "zh_CN"},
     {"baseWidth", 960},
     {"baseHeight", 720},
