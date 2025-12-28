@@ -5,61 +5,81 @@
 #include "GameValues.h"
 #include "LangManager.h"
 #include "LogManager.h"
+#include <SDL3/SDL.h>
 #include <string>
 #include <tinyfiledialogs.h>
 
 GameManager::GameManager()
     : settings("settings.json", Global::defaultSettings) {}
 
-bool GameManager::Init() {
+void GameManager::Init() {
   LogManager::Info("[Init] Initializing game manager...");
 
   if (!settings.Load()) {
     LogManager::Critical(
         "[Init] Failed to load global settings: settings.json");
-    return false;
+    return;
   }
   LogManager::Info("[Init] Settings loaded successfully.");
-  SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_MSAA_4X_HINT);
+  if (!SDL_Init(SDL_INIT_VIDEO)) {
+    LogManager::Critical(std::string("[Init] Failed to load graphic backend:") +
+                         SDL_GetError());
+    return;
+  }
   int width = settings.Get<int>("baseWidth");
   int height = settings.Get<int>("baseHeight");
-
-  InitWindow(width, height, "Window");
-  if (!IsWindowReady()) {
-    LogManager::Critical("[Init] Failed to initialize window.");
-    return false;
+  window =
+      SDL_CreateWindow("window", width, height, SDL_WINDOW_HIGH_PIXEL_DENSITY);
+  if (!window) {
+    LogManager::Critical(std::string("[Init] Failed to initialize window") +
+                         SDL_GetError());
+    return;
   }
+  renderer = SDL_CreateRenderer(window, nullptr);
+  if (!renderer) {
+    LogManager::Critical(std::string("[Init] Failed to initialize renderer") +
+                         SDL_GetError());
+    return;
+  }
+  SDL_SetRenderVSync(renderer, 1);
   LogManager::Info("[Init] Window initialized: " + std::to_string(width) + "x" +
                    std::to_string(height));
 
-  Image icon = LoadImage("image/app_icon.png");
-  if (icon.data) {
-    SetWindowIcon(icon);
-    UnloadImage(icon);
+  SDL_Surface *icon = SDL_LoadPNG("image/app_icon.png");
+  if (icon) {
+    SDL_SetWindowIcon(window, icon);
+    SDL_DestroySurface(icon);
     LogManager::Info("[Init] Window icon loaded.");
   } else {
     LogManager::Warning(
         "[Init] Failed to load window icon: image/app_icon.png");
   }
 
-  SetTargetFPS(60);
   if (!LangManager::Init(settings)) {
     LogManager::Critical("[Init] Language system initialization failed.");
-    return false;
+    return;
   }
-  SetWindowTitle(LangManager::GetText("Meta.Title").c_str());
+  SDL_SetWindowTitle(window, LangManager::GetText("Meta.Title").c_str());
   LogManager::Info("[Init] Language system initialized.");
-
   LogManager::Info("[Init] Initialization completed.");
-  return true;
+  running = true;
 }
 
+void GameManager::Abort() { running = false; }
 GameManager::~GameManager() {
   if (currentScene) {
     delete currentScene;
     currentScene = nullptr;
   }
-  CloseWindow();
+  if (renderer) {
+    SDL_DestroyRenderer(renderer);
+    renderer = nullptr;
+  }
+  if (window) {
+    SDL_DestroyWindow(window);
+    window = nullptr;
+  }
+  SDL_Quit();
 }
 
 GameManager *GameManager::Get() {
@@ -69,13 +89,13 @@ GameManager *GameManager::Get() {
 
 void GameManager::ChangeLanguage(const std::string &langId) {
   LangManager::SetLanguage(langId, settings);
-  SetWindowTitle(LangManager::GetText("Meta.Title").c_str());
+  SDL_SetWindowTitle(window, LangManager::GetText("Meta.Title").c_str());
   RefreshSceneText();
 }
 
 void GameManager::StepLanguage(int step) {
   LangManager::StepLanguage(step, settings);
-  SetWindowTitle(LangManager::GetText("Meta.Title").c_str());
+  SDL_SetWindowTitle(window, LangManager::GetText("Meta.Title").c_str());
   RefreshSceneText();
 }
 
@@ -102,26 +122,37 @@ void GameManager::SetScene(GameScene *newScene) {
 }
 
 void GameManager::Run() {
-  while (!WindowShouldClose()) {
-    Update();
+  SDL_Event event;
+  while (running) {
+    int frameStartTime = SDL_GetTicks();
+    float deltaTime = (lastTime - frameStartTime) / 1000.0f;
+    lastTime = frameStartTime;
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+      case SDL_EVENT_QUIT:
+        running = false;
+        break;
+      }
+    }
+    if (!running)
+      break;
+
+    Update(deltaTime);
     Draw();
   }
 }
 
-void GameManager::Update() {
-  float deltaTime = GetFrameTime();
+void GameManager::Update(float dt) {
   if (currentScene) {
-    currentScene->Update(deltaTime);
+    currentScene->Update(dt);
   }
 }
 
 void GameManager::Draw() {
-  BeginDrawing();
-  ClearBackground(BLACK);
-
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // 黑色
+  SDL_RenderClear(renderer);
   if (currentScene) {
-    currentScene->Draw();
+    currentScene->Draw(renderer);
   }
-
-  EndDrawing();
+  SDL_RenderPresent(renderer);
 }

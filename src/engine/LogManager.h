@@ -10,8 +10,6 @@ public:
   enum class LogLevel { Info, Warning, Error, Critical };
   using LogCallback = std::function<void(LogLevel, const std::string &)>;
 
-  static void RegisterCallback(LogCallback cb);
-
   LogManager(const LogManager &) = delete;
   LogManager &operator=(const LogManager &) = delete;
   static void Init();
@@ -23,7 +21,6 @@ public:
 private:
   static void Write(const std::string &prefix, const std::string &message, bool error);
   static inline std::mutex logMutex;
-  static void Notify(LogLevel level, const std::string &message);
   static inline std::vector<LogCallback> callbacks;
   static bool hasCritical;
   static bool initialized;

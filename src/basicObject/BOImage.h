@@ -7,8 +7,8 @@
 class BOImage : public GameObject {
 private:
   Texture2D texture{};
-  Vector2 position{};
-  Vector2 size{};
+  SDL_FPoint* position{};
+  SDL_FPoint* size{};
   Color tint{WHITE};
   int frameCount{1};
   float frameHeight{0};
@@ -18,10 +18,10 @@ private:
 
 public:
   static constexpr float AUTO = -1.0f;
-  BOImage(std::string path, Vector2 pos, Vector2 siz = {AUTO, AUTO},
+  BOImage(std::string path, SDL_FPoint* pos, SDL_FPoint* siz = {AUTO, AUTO},
          Color color = WHITE);
-  BOImage(std::string path, Vector2 pos, int frames, float duration,
-         Vector2 siz = {AUTO, AUTO}, Color color = WHITE);
+  BOImage(std::string path, SDL_FPoint* pos, int frames, float duration,
+         SDL_FPoint* siz = {AUTO, AUTO}, Color color = WHITE);
 
   ~BOImage() override;
   BOImage(const BOImage &) = delete;
@@ -30,8 +30,8 @@ public:
   void Update(float deltaTime) override;
   void Draw() override;
 
-  Vector2 GetSize() const;
-  void SetPosition(Vector2 pos);
+  SDL_FPoint* GetSize() const;
+  void SetPosition(SDL_FPoint* pos);
   bool IsAnimated() const { return frameCount > 1; }
 };
 

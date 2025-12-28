@@ -1,14 +1,22 @@
 add_requires(
-    "raylib",
     "cpr",
     "nlohmann_json",
     "picosha2",
     "tinyfiledialogs"
 )
-
 add_rules("mode.debug", "mode.release")
 set_languages("c++20")
 
+local vendored_libs = {
+    "pkgconfig::sdl3", 
+    "pkgconfig::sdl3-image", 
+    "pkgconfig::sdl3-ttf", 
+    "pkgconfig::sdl3-mixer"
+}
+
+for _, libname in ipairs(vendored_libs) do
+    add_requires(libname, {system = true})
+end
 target("deltarune_cnpatcher")
     set_kind("binary")
 
@@ -18,13 +26,12 @@ target("deltarune_cnpatcher")
 
     -- packages
     add_packages(
-        "raylib",
-        "nlohmann_json",
         "cpr",
+        "nlohmann_json",
         "picosha2",
         "tinyfiledialogs"
     )
-
+    add_packages(table.unpack(vendored_libs))
     -- defines
     add_defines("UNICODE", "_UNICODE")
 

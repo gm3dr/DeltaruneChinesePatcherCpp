@@ -1,6 +1,6 @@
 ﻿#include "BOScrollText.h"
 #include "../engine/LangManager.h"
-BOScrollText::BOScrollText(const std::string &key, Rectangle area, Color c,
+BOScrollText::BOScrollText(const std::string &key, SDL_FRect* area, Color c,
                          int siz)
     : BOText(key, {area.x, area.y}, c, false, siz), viewRect(area) {
   CalculateHeight();
@@ -13,17 +13,17 @@ void BOScrollText::RefreshText() {
 
 void BOScrollText::CalculateHeight() {
   const Font &font = LangManager::GetFont();
-  Vector2 measure =
+  SDL_FPoint* measure =
       MeasureTextEx(font, displayText.c_str(), (float)fontSize, 1.0f);
   totalContentHeight = measure.y;
 }
 
 void BOScrollText::Update(float dt) {
-  Vector2 mouse = GetMousePosition();
+  SDL_FPoint* mouse = GetMousePosition();
   if (!CheckCollisionPointRec(mouse, viewRect))
     return;
 
-  Vector2 wheelMove = GetMouseWheelMoveV();
+  SDL_FPoint* wheelMove = GetMouseWheelMoveV();
   if (wheelMove.y != 0.0f) {
     SetScrollOffset(scrollOffset + wheelMove.y * 20.0f);
   }
@@ -33,7 +33,7 @@ void BOScrollText::Draw() {
   BeginScissorMode((int)viewRect.x, (int)viewRect.y, (int)viewRect.width,
                    (int)viewRect.height);
 
-  Vector2 savedDrawPos = drawPos;
+  SDL_FPoint* savedDrawPos = drawPos;
   drawPos.y += scrollOffset;
 
   BOText::Draw();

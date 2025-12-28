@@ -3,9 +3,10 @@
 
 #include "GameConfig.h"
 #include <nlohmann/json.hpp>
-#include <raylib.h>
 #include <string>
 #include <vector>
+
+class TTF_Font;
 
 class LangManager {
 public:
@@ -13,12 +14,11 @@ public:
   ~LangManager();
 
   static bool Init(GameConfig &settings);
-  static void Cleanup();
   static void SetLanguage(const std::string &langId, GameConfig &settings);
   static std::string GetCurrentLanguage(GameConfig &settings);
   static void StepLanguage(int step, GameConfig &settings);
   static std::string GetText(const std::string &key);
-  static Font &GetFont();
+  static TTF_Font *GetFont();
   static const std::vector<std::string> &GetAvailableLanguages();
 
 private:
@@ -26,7 +26,7 @@ private:
   static bool LoadLanguageList();
   static bool LoadLanguageData(const std::string &langId);
 
-  static Font mainFont;
+  static TTF_Font *mainFont;
   static nlohmann::json currentLangData;
   static std::vector<std::string> langList;
 };

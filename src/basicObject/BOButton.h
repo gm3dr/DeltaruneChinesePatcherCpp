@@ -13,7 +13,7 @@ public:
     HOVERED,
     PRESSED,
   };
-  BOButton(const std::string &langKey, Vector2 position, Vector2 size,
+  BOButton(const std::string &langKey, SDL_FPoint* position, SDL_FPoint* size,
           std::function<void()> callback = nullptr, bool disabled = false);
 
   ~BOButton() override;
@@ -25,22 +25,22 @@ public:
   void SetEnabled(bool enabled);
   bool IsEnabled() const { return state != State::DISABLED; }
   State GetState() const { return state; }
-  void SetPosition(Vector2 newPos);
-  void SetSize(Vector2 newSize);
+  void SetPosition(SDL_FPoint* newPos);
+  void SetSize(SDL_FPoint* newSize);
   void SetCallback(std::function<void()> callback);
   void SetText(const std::string &key);
-  Vector2 GetPosition() const { return pos; }
-  Vector2 GetSize() const { return size; }
-  Rectangle GetBounds() const { return {pos.x, pos.y, size.x, size.y}; }
+  SDL_FPoint* GetPosition() const { return pos; }
+  SDL_FPoint* GetSize() const { return size; }
+  SDL_FRect* GetBounds() const { return {pos.x, pos.y, size.x, size.y}; }
 
 private:
-  static void DrawNineSlice(Texture2D tex, Rectangle rect, float margin,
+  static void DrawNineSlice(Texture2D tex, SDL_FRect* rect, float margin,
                             Color tint);
-  Vector2 pos{};
-  Vector2 size{};
+  SDL_FPoint* pos{};
+  SDL_FPoint* size{};
   std::string langKey;
   std::string displayText;
-  Vector2 cachedTextPos{};
+  SDL_FPoint* cachedTextPos{};
 
   Texture2D textures[4]{};
   State state{State::NORMAL};

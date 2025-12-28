@@ -4,7 +4,7 @@
 constexpr const char *BOButton::TEXTURE_PATHS[4];
 constexpr Color BOButton::TEXT_COLORS[4];
 
-BOButton::BOButton(const std::string &langKey, Vector2 position, Vector2 size,
+BOButton::BOButton(const std::string &langKey, SDL_FPoint* position, SDL_FPoint* size,
                  std::function<void()> callback, bool disabled)
     : pos(position), size(size), langKey(langKey), onClick(callback),
       state(disabled ? State::DISABLED : State::NORMAL) {
@@ -30,7 +30,7 @@ void BOButton::RefreshText() {
   const Font &font = LangManager::GetFont();
   float fontSize = (float)font.baseSize;
 
-  Vector2 textSize = MeasureTextEx(font, displayText.c_str(), fontSize, 1.0f);
+  SDL_FPoint* textSize = MeasureTextEx(font, displayText.c_str(), fontSize, 1.0f);
   cachedTextPos.x = pos.x + (size.x - textSize.x) * 0.5f;
   cachedTextPos.y = pos.y + (size.y - textSize.y) * 0.5f;
 }
@@ -45,12 +45,12 @@ void BOButton::SetEnabled(bool enabled) {
   }
 }
 
-void BOButton::SetPosition(Vector2 newPos) {
+void BOButton::SetPosition(SDL_FPoint* newPos) {
   pos = newPos;
   RefreshText();
 }
 
-void BOButton::SetSize(Vector2 newSize) {
+void BOButton::SetSize(SDL_FPoint* newSize) {
   size = newSize;
   RefreshText();
 }
@@ -71,8 +71,8 @@ void BOButton::Update(float dt) {
     return;
   }
 
-  Rectangle bounds = GetBounds();
-  Vector2 mousePos = GetMousePosition();
+  SDL_FRect* bounds = GetBounds();
+  SDL_FPoint* mousePos = GetMousePosition();
   bool isHovered = CheckCollisionPointRec(mousePos, bounds);
   if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
     state = State::PRESSED;
@@ -94,7 +94,7 @@ void BOButton::Update(float dt) {
 
 void BOButton::Draw() {
 
-  Rectangle drawRect = GetBounds();
+  SDL_FRect* drawRect = GetBounds();
   int stateIndex = static_cast<int>(state);
 
   if (textures[stateIndex].id != 0) {
@@ -107,11 +107,11 @@ void BOButton::Draw() {
              TEXT_COLORS[stateIndex]);
 }
 
-void BOButton::DrawNineSlice(Texture2D tex, Rectangle rect, float margin,
+void BOButton::DrawNineSlice(Texture2D tex, SDL_FRect* rect, float margin,
                             Color tint) {
   float w = (float)tex.width;
   float h = (float)tex.height;
-  Rectangle src[9] = {
+  SDL_FRect* src[9] = {
 
       {0, 0, margin, margin},
       {margin, 0, w - 2 * margin, margin},
@@ -124,7 +124,7 @@ void BOButton::DrawNineSlice(Texture2D tex, Rectangle rect, float margin,
       {0, h - margin, margin, margin},
       {margin, h - margin, w - 2 * margin, margin},
       {w - margin, h - margin, margin, margin}};
-  Rectangle dst[9] = {
+  SDL_FRect* dst[9] = {
 
       {rect.x, rect.y, margin, margin},
       {rect.x + margin, rect.y, rect.width - 2 * margin, margin},

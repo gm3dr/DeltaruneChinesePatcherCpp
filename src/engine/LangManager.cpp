@@ -1,6 +1,6 @@
 ﻿#include "LangManager.h"
 #include "LogManager.h"
-
+#include <SDL3_ttf/SDL_ttf.h>
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -8,13 +8,18 @@
 
 namespace fs = std::filesystem;
 
-Font LangManager::mainFont;
+TTF_Font *LangManager::mainFont = nullptr;
 nlohmann::json LangManager::currentLangData;
 std::vector<std::string> LangManager::langList;
 
 LangManager::LangManager(GameConfig &cfg) {}
 
-LangManager::~LangManager() { Cleanup(); }
+LangManager::~LangManager() {
+  if (mainFont) {
+    TTF_CloseFont(mainFont);
+    mainFont = nullptr;
+  }
+}
 
 bool LangManager::Init(GameConfig &settings) {
   if (!LoadFont(settings))
@@ -35,43 +40,14 @@ bool LangManager::Init(GameConfig &settings) {
   return true;
 }
 
-void LangManager::Cleanup() {
-  if (mainFont.texture.id != 0) {
-    UnloadFont(mainFont);
-    mainFont = {};
-  }
-}
-
 bool LangManager::LoadFont(GameConfig &settings) {
   LogManager::Info("[Lang] Loading font...");
-
-  fs::path charsetPath = fs::path("lang") / "charset.txt";
-  if (!fs::exists(charsetPath)) {
-    LogManager::Critical("[Lang] Charset file missing: " +
-                         charsetPath.string());
-    return false;
-  }
-
-  std::ifstream i(charsetPath, std::ios::binary);
-  if (!i) {
-    LogManager::Critical("[Lang] Failed to open charset file: " +
-                         charsetPath.string());
-    return false;
-  }
-
-  std::string charset((std::istreambuf_iterator<char>(i)),
-                      std::istreambuf_iterator<char>());
-
-  int codepointCount = 0;
-  int *codepoints = LoadCodepoints(charset.c_str(), &codepointCount);
-
   std::string fontPath = settings.Get<std::string>("mainFont");
   int fontSize = settings.Get<int>("mainFontSize");
 
-  mainFont = LoadFontEx(fontPath.c_str(), fontSize, codepoints, codepointCount);
-  UnloadCodepoints(codepoints);
+  mainFont = TTF_OpenFont(fontPath.c_str(), fontSize);
 
-  if (mainFont.texture.id == 0) {
+  if (!mainFont) {
     LogManager::Critical("[Lang] Failed to load font: " + fontPath);
     return false;
   }
@@ -145,8 +121,7 @@ bool LangManager::LoadLanguageList() {
                    " languages.");
   return true;
 }
-
-Font &LangManager::GetFont() { return mainFont; }
+TTF_Font *LangManager::GetFont() { return mainFont; }
 
 std::string LangManager::GetText(const std::string &key) {
   nlohmann::json *current = &currentLangData;

@@ -5,6 +5,8 @@
 #include <string>
 
 class GameScene;
+class SDL_Window;
+class SDL_Renderer;
 
 class GameManager {
 private:
@@ -17,7 +19,7 @@ public:
 
   static GameManager *Get();
 
-  bool Init();
+  void Init();
   GameConfig &Settings() { return settings; }
   GameManager(const GameManager &) = delete;
   GameManager &operator=(const GameManager &) = delete;
@@ -27,13 +29,19 @@ public:
 
   void SetScene(GameScene *newScene);
   void Run();
+  void Abort();
 
 private:
-  void Update();
+  void Update(float deltaTime);
   void Draw();
   void RefreshSceneText();
 
   GameConfig settings;
+  SDL_Window* window;
+  SDL_Renderer* renderer;
+  bool running = false;
+  int lastTime;
+  static constexpr int FPS = 60;
 };
 
 #endif

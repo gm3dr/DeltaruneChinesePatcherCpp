@@ -1,25 +1,22 @@
 ﻿#include "GameScene.h"
 #include "../engine/GameObject.h"
-
 #include <algorithm>
 
-GameScene::~GameScene() {
-  ClearObjects();
-}
+GameScene::~GameScene() { ClearObjects(); }
 
 void GameScene::Update(float deltaTime) {
   FlushObjects();
-  for (auto& obj : objects) {
+  for (auto &obj : objects) {
     if (obj && obj->IsActive()) {
       obj->Update(deltaTime);
     }
   }
 }
 
-void GameScene::Draw() {
-  for (auto& obj : objects) {
+void GameScene::Draw(SDL_Renderer *renderer) {
+  for (auto &obj : objects) {
     if (obj && obj->IsActive()) {
-      obj->Draw();
+      obj->Draw(renderer);
     }
   }
 }

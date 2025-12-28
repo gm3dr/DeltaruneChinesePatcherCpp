@@ -2,7 +2,6 @@
 #include <chrono>
 #include <ctime>
 #include <fstream>
-#include <functional>
 #include <iomanip>
 #include <mutex>
 #include <sstream>
@@ -33,17 +32,14 @@ void LogManager::Init() {
 
 void LogManager::Info(const std::string &message) {
   Write("-- [Info] ", message, false);
-  Notify(LogLevel::Info, message);
 }
 
 void LogManager::Warning(const std::string &message) {
   Write("-> [Warning] ", message, true);
-  Notify(LogLevel::Warning, message);
 }
 
 void LogManager::Error(const std::string &message) {
   Write("!! [Error] ", message, true);
-  Notify(LogLevel::Error, message);
 }
 
 void LogManager::Critical(const std::string &message) {
@@ -53,8 +49,6 @@ void LogManager::Critical(const std::string &message) {
   Write("@@ [Fatal Error] ", message, true);
   tinyfd_messageBox("Fatal Error", (message + "\nProgram will abort.").c_str(),
                     "ok", "error", 1);
-  Notify(LogLevel::Critical, message);
-  exit(1);
 }
 
 void LogManager::Write(const std::string &prefix, const std::string &message,
@@ -80,15 +74,5 @@ void LogManager::Write(const std::string &prefix, const std::string &message,
               << std::setfill('0') << std::setw(3) << ms.count() << " "
               << message << std::endl;
     }
-  }
-}
-
-void LogManager::RegisterCallback(LogCallback cb) {
-  callbacks.push_back(std::move(cb));
-}
-
-void LogManager::Notify(LogLevel level, const std::string &message) {
-  for (auto &cb : callbacks) {
-    cb(level, message);
   }
 }

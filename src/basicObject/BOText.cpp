@@ -1,7 +1,7 @@
 ﻿#include "BOText.h"
 #include "../engine/LangManager.h"
 
-BOText::BOText(const std::string &key, Vector2 p, Color c, bool center, int siz,
+BOText::BOText(const std::string &key, SDL_FPoint* p, Color c, bool center, int siz,
                float a)
     : langKey(key), pos(p), color(c), alpha(a), centered(center) {
 
@@ -47,18 +47,18 @@ void BOText::SetText(const std::string &newKey) {
   }
 }
 
-void BOText::SetPosition(Vector2 p) {
+void BOText::SetPosition(SDL_FPoint* p) {
   pos = p;
   RefreshText();
 }
 
-Vector2 BOText::GetPosition() const { return pos; }
+SDL_FPoint* BOText::GetPosition() const { return pos; }
 
 void BOText::SetColor(Color c) { color = c; }
 
 void BOText::SetAlpha(float a) { alpha = a; }
 
-Vector2 BOText::GetSize() const {
+SDL_FPoint* BOText::GetSize() const {
   return MeasureTextEx(LangManager::GetFont(), displayText.c_str(),
                        (float)fontSize, 1.0f);
 }
@@ -67,7 +67,7 @@ void BOText::RefreshText() {
   std::string rawText = LangManager::GetText(langKey);
   displayText = ProcessPlaceholders(rawText);
 
-  Vector2 textSize = MeasureTextEx(LangManager::GetFont(), displayText.c_str(),
+  SDL_FPoint* textSize = MeasureTextEx(LangManager::GetFont(), displayText.c_str(),
                                    (float)fontSize, 1.0f);
 
   drawPos.x = pos.x - (centered ? textSize.x / 2.0f : 0.0f);

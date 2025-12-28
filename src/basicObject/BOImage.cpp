@@ -1,6 +1,6 @@
 ﻿#include "BOImage.h"
 #include "../engine/LogManager.h"
-BOImage::BOImage(std::string path, Vector2 pos, Vector2 siz, Color color)
+BOImage::BOImage(std::string path, SDL_FPoint* pos, SDL_FPoint* siz, Color color)
     : position(pos), tint(color), frameCount(1) {
 
   texture = LoadTexture(path.c_str());
@@ -13,8 +13,8 @@ BOImage::BOImage(std::string path, Vector2 pos, Vector2 siz, Color color)
   size = {siz.x < 0 ? (float)texture.width : siz.x,
           siz.y < 0 ? (float)texture.height : siz.y};
 }
-BOImage::BOImage(std::string path, Vector2 pos, int frames, float duration,
-               Vector2 siz, Color color)
+BOImage::BOImage(std::string path, SDL_FPoint* pos, int frames, float duration,
+               SDL_FPoint* siz, Color color)
     : position(pos), tint(color), frameCount(frames), frameDuration(duration),
       currentFrame(0), frameTimer(0.0f) {
 
@@ -54,11 +54,11 @@ void BOImage::Draw() {
   float srcY = frameCount > 1 ? currentFrame * frameHeight : 0;
   float srcHeight = frameCount > 1 ? frameHeight : (float)texture.height;
 
-  Rectangle source = {0, srcY, (float)texture.width, srcHeight};
-  Rectangle dest = {position.x, position.y, size.x, size.y};
+  SDL_FRect* source = {0, srcY, (float)texture.width, srcHeight};
+  SDL_FRect* dest = {position.x, position.y, size.x, size.y};
   DrawTexturePro(texture, source, dest, {0, 0}, 0, tint);
 }
 
-Vector2 BOImage::GetSize() const { return size; }
+SDL_FPoint* BOImage::GetSize() const { return size; }
 
-void BOImage::SetPosition(Vector2 pos) { position = pos; }
+void BOImage::SetPosition(SDL_FPoint* pos) { position = pos; }
