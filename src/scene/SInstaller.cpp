@@ -24,7 +24,7 @@ SInstaller::SInstaller() {
   versionText = new BOText("About.Info", {280, 50});
   contactText = new BOText("Readme.Contact", {280, 600}, GREEN);
   languageText =
-      new BOText("Meta.LanguageName", {120, 610}, WHITE, true, smallFontSize);
+      new BOText("Meta.LanguageName", {120, 620}, WHITE, true, smallFontSize);
   currentGamePath = new BOText("", {290, 60}, WHITE, false, smallFontSize);
   gamePathState = new BOText("", {290, 100}, YELLOW, false, smallFontSize);
   browsePathButton = new BOButton("Patch.BrowseGamePath", {290, 150, 200, 80}),
@@ -114,7 +114,7 @@ void SInstaller::Init() {
         [](void *userdata, const char *const *filelist, int filter) {
           if (filelist && *filelist) {
             auto *self = static_cast<SInstaller *>(userdata);
-            self->currentGamePath->SetText(*filelist);
+            self->currentGamePath->SetText(*filelist, true);
             self->gamePathDetector->SetPath(*filelist);
           } else {
             LogManager::Info("User cancelled path select.");

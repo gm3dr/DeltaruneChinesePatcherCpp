@@ -34,7 +34,7 @@ public:
   void SetParam(const std::string &key, float value);
   void SetParam(const std::string &key, int value);
 
-  void SetText(const std::string &newKey);
+  void SetText(const std::string &newKey, bool plain = false);
   void SetPosition(SDL_Point p);
   void SetColor(SDL_Color c);
   void SetAlpha(float a);

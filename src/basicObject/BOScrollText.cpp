@@ -7,8 +7,8 @@ BOScrollText::BOScrollText(const std::string &key, SDL_Point p, int vh,
 void BOScrollText::Update(float dt) {
   float mouseX, mouseY;
   SDL_GetMouseState(&mouseX, &mouseY);
-
-  SDL_Point mousePos = {(int)mouseX, (int)mouseY};
+  float scale = SDL_GetWindowDisplayScale(GameManager::Get()->GetWindow());
+  SDL_Point mousePos = {(int)(mouseX / scale), (int)(mouseX / scale)};
   SDL_Rect viewRect = {drawRect.x, drawRect.y, drawRect.w, viewHeight};
 
   if (!SDL_PointInRect(&mousePos, &viewRect))

@@ -6,10 +6,12 @@
 #include "LangManager.h"
 #include "LogManager.h"
 #include "SDL3/SDL_messagebox.h"
+#include "SDL3/SDL_render.h"
+#include "SDL3/SDL_surface.h"
+#include "SDL3/SDL_video.h"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
-
 
 SDL_Renderer *GameGlobal::renderer = nullptr;
 const nlohmann::json GameGlobal::defaultSettings = {
@@ -94,8 +96,9 @@ void GameManager::Init() {
   }
   int width = settings.Get<int>("baseWidth");
   int height = settings.Get<int>("baseHeight");
-  window =
-      SDL_CreateWindow("window", width, height, SDL_WINDOW_HIGH_PIXEL_DENSITY);
+  float scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
+  window = SDL_CreateWindow("window", scale * width, scale * height,
+                            SDL_WINDOW_HIGH_PIXEL_DENSITY);
   if (!window) {
     LogManager::Critical(std::string("[Init] Failed to initialize window") +
                          SDL_GetError());
@@ -108,6 +111,9 @@ void GameManager::Init() {
     return;
   }
   SDL_SetRenderVSync(GameGlobal::renderer, 1);
+  SDL_SetDefaultTextureScaleMode(GameGlobal::renderer, SDL_SCALEMODE_PIXELART);
+  SDL_SetRenderLogicalPresentation(GameGlobal::renderer, width, height,
+                                   SDL_LOGICAL_PRESENTATION_LETTERBOX);
   LogManager::Info("[Init] Window initialized: " + std::to_string(width) + "x" +
                    std::to_string(height));
 

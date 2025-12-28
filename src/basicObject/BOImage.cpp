@@ -12,7 +12,6 @@ BOImage::BOImage(const std::string &path, SDL_Point pos, SDL_Point siz, float a)
     size = {0, 0};
     return;
   }
-  SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
   float tw, th;
   SDL_GetTextureSize(texture, &tw, &th);
   SDL_SetTextureAlphaMod(texture, (Uint8)(alpha * 255));

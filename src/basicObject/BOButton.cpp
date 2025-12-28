@@ -1,6 +1,8 @@
 ﻿#include "BOButton.h"
 #include "../engine/GameManager.h"
 #include "BOImage.h"
+#include "SDL3/SDL_mouse.h"
+#include "SDL3/SDL_video.h"
 
 constexpr const char *BOButton::TEXTURE_PATHS[4];
 constexpr SDL_Color BOButton::TEXT_COLORS[4];
@@ -70,7 +72,8 @@ void BOButton::Update(float dt) {
 
   float mouseX, mouseY;
   int mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-  SDL_Point mousePos = {(int)mouseX, (int)mouseY};
+  float scale = SDL_GetWindowDisplayScale(GameManager::Get()->GetWindow());
+  SDL_Point mousePos = {(int)(mouseX / scale), (int)(mouseY / scale)};
   bool isHovered = SDL_PointInRect(&mousePos, &area);
   bool isMouseDown = (mouseState & SDL_BUTTON_LMASK);
   bool isJustPressed = GameManager::Get()->IsMouseJustPressed();

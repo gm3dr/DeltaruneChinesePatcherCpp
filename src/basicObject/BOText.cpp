@@ -4,18 +4,14 @@
 
 BOText::BOText(const std::string &key, SDL_Point p, SDL_Color c, bool center,
                int siz, float a)
-    : langKey(key), pos(p), color(c), alpha(a), centered(center) {
+    : pos(p), color(c), alpha(a), centered(center) {
 
   if (siz == DEFAULT_FONT_SIZE) {
     fontSize = LangManager::GetFontSize();
   } else {
     fontSize = siz;
   }
-  if (key == "") {
-    langKey = " ";
-  }
-  SDL_SetTextureScaleMode(textTexture, SDL_SCALEMODE_NEAREST);
-  RefreshText();
+  SetText(key);
 }
 
 std::string BOText::ProcessPlaceholders(const std::string &text) const {
@@ -44,9 +40,19 @@ void BOText::SetParam(const std::string &key, int value) {
   SetParam(key, std::to_string(value));
 }
 
-void BOText::SetText(const std::string &newKey) {
-  if (langKey != newKey) {
-    langKey = newKey;
+void BOText::SetText(const std::string &content, bool plain) {
+  if (plain) {
+    if (displayText != content)
+      displayText = content;
+  } else {
+    if (langKey != content) {
+      langKey = content;
+      std::string rawText = LangManager::GetText(langKey);
+      displayText = ProcessPlaceholders(rawText);
+    }
+    if (displayText == "") {
+      displayText = "[null]";
+    }
     RefreshText();
   }
 }
@@ -65,14 +71,16 @@ void BOText::SetAlpha(float a) { alpha = a; }
 SDL_Point BOText::GetSize() const { return {drawRect.w, drawRect.h}; }
 
 void BOText::RefreshText() {
-  std::string rawText = LangManager::GetText(langKey);
-  displayText = ProcessPlaceholders(rawText);
   if (textTexture) {
     SDL_DestroyTexture(textTexture);
     textTexture = nullptr;
   }
-  SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(
-      LangManager::GetFont(), displayText.c_str(), 0, WHITE, 0);
+  TTF_Font *font = LangManager::GetFont();
+  int originalSize = TTF_GetFontSize(font);
+  TTF_SetFontSize(font, fontSize);
+  SDL_Surface *surface =
+      TTF_RenderText_Solid_Wrapped(font, displayText.c_str(), 0, WHITE, 0);
+  TTF_SetFontSize(font, originalSize);
   if (!surface) {
     LogManager::Error(std::string("Can't create text surface:") +
                       SDL_GetError());
