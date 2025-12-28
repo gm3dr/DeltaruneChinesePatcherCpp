@@ -51,7 +51,7 @@ void BOText::SetText(const std::string &content, bool plain) {
       displayText = ProcessPlaceholders(rawText);
     }
     if (displayText == "") {
-      displayText = "[null]";
+      displayText = " ";
     }
     RefreshText();
   }
