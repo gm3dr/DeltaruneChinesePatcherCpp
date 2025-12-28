@@ -5,17 +5,13 @@
 #include "GameScene.h"
 #include "LangManager.h"
 #include "LogManager.h"
-#include "SDL3/SDL_messagebox.h"
-#include "SDL3/SDL_render.h"
-#include "SDL3/SDL_surface.h"
-#include "SDL3/SDL_video.h"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
 
 SDL_Renderer *GameGlobal::renderer = nullptr;
 const nlohmann::json GameGlobal::defaultSettings = {
-    {"patcherVersion", "0.9.0"},
+    {"patcherVersion", "0.9.1"},
     {"displayLanguage", "zh_CN"},
     {"baseWidth", 960},
     {"baseHeight", 720},

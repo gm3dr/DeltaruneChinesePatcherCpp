@@ -1,8 +1,6 @@
 ﻿#include "BOButton.h"
-#include "../engine/GameManager.h"
 #include "BOImage.h"
-#include "SDL3/SDL_mouse.h"
-#include "SDL3/SDL_video.h"
+#include "../engine/GameManager.h"
 
 constexpr const char *BOButton::TEXTURE_PATHS[4];
 constexpr SDL_Color BOButton::TEXT_COLORS[4];

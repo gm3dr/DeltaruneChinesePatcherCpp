@@ -9,7 +9,6 @@
 #include "../object/OInstallPatch.h"
 #include "../object/OPatchValue.h"
 #include "../object/OReadme.h"
-#include "SDL3/SDL_dialog.h"
 
 SInstaller::SInstaller() {
   int mainFontSize = LangManager::GetFontSize();
