@@ -12,7 +12,7 @@
     "About": {
         "Info": "DELTARUNE 汉化安装器 C++ 版 \n版本号：{VERSION}  图形库：Raylib\n\n设置 DELTARUNE Steam 版安装目录\n安装器会自动为每个章节的 data 安装补丁",
         "ContribTitle": "贡献者：",
-        "ContribList": "ws3917 - 编写安装器代码\n憨憨羊の宇航鸽鸽 - Godot版安装器参考\nWhatDamon - 汉化安装器图标\n好人汉化组 - DELTARUNE 中文本地化",
+        "ContribList": "ws3917 - 编写安装器代码\n憨憨羊 宇航鸽鸽 - Godot版安装器参考\nWhatDamon - 汉化安装器图标\n好人汉化组 - DELTARUNE 中文本地化",
         "Github": "此安装器已在 Github 上开源\n点击打开 Github 仓库"
     },
     "Readme": {

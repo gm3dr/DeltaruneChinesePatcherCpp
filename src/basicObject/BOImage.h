@@ -9,21 +9,21 @@ protected:
   SDL_Texture *texture{};
   SDL_Point position{};
   SDL_Point size{};
-  SDL_Color tint = WHITE;
   int frameCount{1};
   int frameHeight{0};
   int currentFrame{0};
   float frameTimer{0};
   float frameDuration{0};
+  float alpha{1};
 
 public:
   static constexpr int AUTO_SIZE = -1;
   BOImage(const std::string &path, SDL_Point pos,
           SDL_Point siz = {AUTO_SIZE, AUTO_SIZE},
-          SDL_Color color = WHITE);
+          float alpha = 1.0);
   BOImage(const std::string &path, SDL_Point pos, int frames, float duration,
           SDL_Point siz = {AUTO_SIZE, AUTO_SIZE},
-          SDL_Color color = WHITE);
+          float alpha = 1.0);
 
   ~BOImage() override;
   BOImage(const BOImage &) = delete;

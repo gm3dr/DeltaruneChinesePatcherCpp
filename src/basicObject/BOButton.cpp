@@ -7,8 +7,8 @@ constexpr SDL_Color BOButton::TEXT_COLORS[4];
 
 BOButton::BOButton(const std::string &langKey, SDL_Rect a,
                    std::function<void()> callback, bool disabled)
-    : text(langKey, {a.x, a.y}, WHITE, true), onClick(callback),
-      area(a), state(disabled ? State::DISABLED : State::NORMAL) {
+    : text(langKey, {a.x, a.y}, WHITE, true), onClick(callback), area(a),
+      state(disabled ? State::DISABLED : State::NORMAL) {
 
   for (int i = 0; i < 4; ++i) {
     images[i] = new BOImage(TEXTURE_PATHS[i], {a.x, a.y}, {a.w, a.h});
@@ -21,6 +21,7 @@ BOButton::~BOButton() {}
 void BOButton::RefreshText() {
   text.RefreshText();
   SDL_Point pos = text.GetPosition();
+  pos.x = area.x + area.w / 2.0f;
   pos.y = area.y + area.h / 2.0 - text.GetSize().y / 2.0;
   text.SetPosition(pos);
 }
@@ -96,9 +97,9 @@ void BOButton::Update(float dt) {
 }
 
 void BOButton::Draw() {
-
   int stateIndex = static_cast<int>(state);
   int margin = 26;
   images[stateIndex]->Draw9Grid(margin);
+  text.SetColor(TEXT_COLORS[stateIndex]);
   text.Draw();
 }

@@ -2,9 +2,8 @@
 #include "../engine/LogManager.h"
 #include <SDL3_image/SDL_image.h>
 
-BOImage::BOImage(const std::string &path, SDL_Point pos, SDL_Point siz,
-                 SDL_Color color)
-    : position(pos), tint(color), frameCount(1) {
+BOImage::BOImage(const std::string &path, SDL_Point pos, SDL_Point siz, float a)
+    : position(pos), alpha(a), frameCount(1) {
 
   texture = IMG_LoadTexture(renderer, path.c_str());
 
@@ -13,12 +12,16 @@ BOImage::BOImage(const std::string &path, SDL_Point pos, SDL_Point siz,
     size = {0, 0};
     return;
   }
-  size = {siz.x < 0 ? texture->w : siz.x, siz.y < 0 ? texture->h : siz.y};
+  SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+  float tw, th;
+  SDL_GetTextureSize(texture, &tw, &th);
+  SDL_SetTextureAlphaMod(texture, (Uint8)(alpha * 255));
+  size = {siz.x < 0 ? (int)tw : siz.x, siz.y < 0 ? (int)th : siz.y};
 }
 
 BOImage::BOImage(const std::string &path, SDL_Point pos, int frames,
-                 float duration, SDL_Point siz, SDL_Color color)
-    : position(pos), tint(color), frameCount(frames), frameDuration(duration),
+                 float duration, SDL_Point siz, float a)
+    : position(pos), alpha(a), frameCount(frames), frameDuration(duration),
       currentFrame(0), frameTimer(0.0f) {
 
   texture = IMG_LoadTexture(renderer, path.c_str());
@@ -30,9 +33,11 @@ BOImage::BOImage(const std::string &path, SDL_Point pos, int frames,
     return;
   }
 
-  frameHeight = texture->h / frameCount;
+  float tw, th;
+  SDL_GetTextureSize(texture, &tw, &th);
 
-  size = {siz.x < 0 ? texture->w : siz.x, siz.y < 0 ? texture->h : siz.y};
+  frameHeight = (int)th / frameCount;
+  size = {siz.x < 0 ? (int)tw : siz.x, siz.y < 0 ? (int)th : siz.y};
 }
 
 BOImage::~BOImage() {
@@ -58,11 +63,15 @@ void BOImage::Draw() {
     return;
 
   int srcY = frameCount > 1 ? currentFrame * frameHeight : 0;
-  int srcHeight = frameCount > 1 ? frameHeight : texture->h;
+  float tw, th;
+  SDL_GetTextureSize(texture, &tw, &th);
 
-  SDL_FRect source = {0, (float)srcY, (float)texture->w, (float)srcHeight};
+  int srcHeight = frameCount > 1 ? frameHeight : (int)th;
+
+  SDL_FRect source = {0.0f, (float)srcY, tw, (float)srcHeight};
   SDL_FRect dest = {(float)position.x, (float)position.y, (float)size.x,
                     (float)size.y};
+
   SDL_RenderTexture(renderer, texture, &source, &dest);
 }
 
@@ -76,7 +85,6 @@ void BOImage::Draw9Grid(int margin) {
   SDL_FRect source = {0, (float)srcY, (float)texture->w, (float)srcHeight};
   SDL_FRect dest = {(float)position.x, (float)position.y, (float)size.x,
                     (float)size.y};
-  SDL_RenderTexture(renderer, texture, &source, &dest);
   SDL_RenderTexture9Grid(renderer, texture, &source, margin, margin, margin,
                          margin, 1, &dest);
 }

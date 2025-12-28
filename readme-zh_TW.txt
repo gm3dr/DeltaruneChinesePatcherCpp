@@ -187,7 +187,7 @@
 
 -- 策劃&程序 --
 yig，ws3917，杜若(santizhizi)，鱘魚子，
-憨憨羊の宇航鴿鴿，好人Ⅲ[Lyra]
+憨憨羊 宇航鴿鴿，好人Ⅲ[Lyra]
 
 -- 第1章翻譯 --
 yig，stargazy，米粒(enderesting)，Wiike，JH，

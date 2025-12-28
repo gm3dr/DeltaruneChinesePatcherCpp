@@ -71,8 +71,8 @@ void BOText::RefreshText() {
     SDL_DestroyTexture(textTexture);
     textTexture = nullptr;
   }
-  SDL_Surface *surface = TTF_RenderText_Blended(LangManager::GetFont(),
-                                                displayText.c_str(), 0, WHITE);
+  SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(
+      LangManager::GetFont(), displayText.c_str(), 0, WHITE, 0);
   if (!surface) {
     LogManager::Error(std::string("Can't create text surface:") +
                       SDL_GetError());
