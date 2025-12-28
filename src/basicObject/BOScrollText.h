@@ -4,23 +4,18 @@
 #include "BOText.h"
 
 class BOScrollText : public BOText {
-private:
-  SDL_FRect* viewRect{};
-  float scrollOffset{0.0f};
-  float totalContentHeight{0.0f};
-
-  void CalculateHeight();
+protected:
+  int scrollOffset = 0;
+  int viewHeight = 0;
 
 public:
-  BOScrollText(const std::string &key, SDL_FRect* area, Color c = WHITE,
-              int siz = DEFAULT_FONT_SIZE);
+  BOScrollText(const std::string &key, SDL_Point p, int vh,
+               SDL_Color c = WHITE, int siz = DEFAULT_FONT_SIZE);
 
-  void RefreshText() override;
   void Update(float deltaTime) override;
   void Draw() override;
   void SetScrollOffset(float offset);
   float GetScrollOffset() const { return scrollOffset; }
-  float GetContentHeight() const { return totalContentHeight; }
 };
 
 #endif

@@ -1,6 +1,5 @@
-﻿#include "GameScene.h"
-#include "../engine/GameObject.h"
-#include <algorithm>
+﻿#include "GameObject.h"
+#include "GameScene.h"
 
 GameScene::~GameScene() { ClearObjects(); }
 
@@ -13,10 +12,10 @@ void GameScene::Update(float deltaTime) {
   }
 }
 
-void GameScene::Draw(SDL_Renderer *renderer) {
+void GameScene::Draw() {
   for (auto &obj : objects) {
     if (obj && obj->IsActive()) {
-      obj->Draw(renderer);
+      obj->Draw();
     }
   }
 }

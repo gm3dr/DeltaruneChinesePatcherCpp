@@ -144,12 +144,12 @@ void OInstallPatch::Draw() {
   warningGuidance->Draw();
   warningType->Draw();
   for (size_t i = 0; i < installStepText.size(); ++i) {
-    Color c = WHITE;
+    SDL_Color c = WHITE;
     InstallStep step = currentStep.load();
     PatchFlowState state = flowState.load();
 
     if (i < static_cast<size_t>(step))
-      c = GREEN;
+      c = {0, 255, 0, 255};
     else if (i == static_cast<size_t>(step)) {
       switch (state) {
       case PatchFlowState::Installing:

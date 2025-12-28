@@ -19,6 +19,7 @@ public:
   static void StepLanguage(int step, GameConfig &settings);
   static std::string GetText(const std::string &key);
   static TTF_Font *GetFont();
+  static int GetFontSize();
   static const std::vector<std::string> &GetAvailableLanguages();
 
 private:

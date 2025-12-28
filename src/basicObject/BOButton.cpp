@@ -1,38 +1,28 @@
 ﻿#include "BOButton.h"
-#include "../engine/LangManager.h"
-#include "../engine/LogManager.h"
+#include "../engine/GameManager.h"
+#include "BOImage.h"
+
 constexpr const char *BOButton::TEXTURE_PATHS[4];
-constexpr Color BOButton::TEXT_COLORS[4];
+constexpr SDL_Color BOButton::TEXT_COLORS[4];
 
-BOButton::BOButton(const std::string &langKey, SDL_FPoint* position, SDL_FPoint* size,
-                 std::function<void()> callback, bool disabled)
-    : pos(position), size(size), langKey(langKey), onClick(callback),
-      state(disabled ? State::DISABLED : State::NORMAL) {
+BOButton::BOButton(const std::string &langKey, SDL_Rect a,
+                   std::function<void()> callback, bool disabled)
+    : text(langKey, {a.x, a.y}, WHITE, true), onClick(callback),
+      area(a), state(disabled ? State::DISABLED : State::NORMAL) {
+
   for (int i = 0; i < 4; ++i) {
-    textures[i] = LoadTexture(TEXTURE_PATHS[i]);
-    if (textures[i].id == 0) {
-      LogManager::Warning(std::string("[Button] Failed to load button texture: ") + TEXTURE_PATHS[i]);
-    }
+    images[i] = new BOImage(TEXTURE_PATHS[i], {a.x, a.y}, {a.w, a.h});
   }
-
   RefreshText();
 }
 
-BOButton::~BOButton() {
-  for (auto &tex : textures) {
-    UnloadTexture(tex);
-  }
-}
+BOButton::~BOButton() {}
 
 void BOButton::RefreshText() {
-  displayText = LangManager::GetText(langKey);
-
-  const Font &font = LangManager::GetFont();
-  float fontSize = (float)font.baseSize;
-
-  SDL_FPoint* textSize = MeasureTextEx(font, displayText.c_str(), fontSize, 1.0f);
-  cachedTextPos.x = pos.x + (size.x - textSize.x) * 0.5f;
-  cachedTextPos.y = pos.y + (size.y - textSize.y) * 0.5f;
+  text.RefreshText();
+  SDL_Point pos = text.GetPosition();
+  pos.y = area.y + area.h / 2.0 - text.GetSize().y / 2.0;
+  text.SetPosition(pos);
 }
 
 void BOButton::SetEnabled(bool enabled) {
@@ -45,13 +35,21 @@ void BOButton::SetEnabled(bool enabled) {
   }
 }
 
-void BOButton::SetPosition(SDL_FPoint* newPos) {
-  pos = newPos;
+void BOButton::SetPosition(SDL_Point newPos) {
+  area.x = newPos.x;
+  area.y = newPos.y;
+  for (auto &img : images) {
+    img->SetPosition(newPos);
+  }
   RefreshText();
 }
 
-void BOButton::SetSize(SDL_FPoint* newSize) {
-  size = newSize;
+void BOButton::SetSize(SDL_Point newSize) {
+  area.w = newSize.x;
+  area.h = newSize.y;
+  for (auto &img : images) {
+    img->SetSize(newSize);
+  }
   RefreshText();
 }
 
@@ -60,10 +58,8 @@ void BOButton::SetCallback(std::function<void()> callback) {
 }
 
 void BOButton::SetText(const std::string &key) {
-  if (langKey != key) {
-    langKey = key;
-    RefreshText();
-  }
+  text.SetText(key);
+  RefreshText();
 }
 
 void BOButton::Update(float dt) {
@@ -71,77 +67,38 @@ void BOButton::Update(float dt) {
     return;
   }
 
-  SDL_FRect* bounds = GetBounds();
-  SDL_FPoint* mousePos = GetMousePosition();
-  bool isHovered = CheckCollisionPointRec(mousePos, bounds);
-  if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-    state = State::PRESSED;
-    return;
-  }
-  if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-    if (state == State::PRESSED) {
-      if (isHovered && onClick) {
+  float mouseX, mouseY;
+  int mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+  SDL_Point mousePos = {(int)mouseX, (int)mouseY};
+  bool isHovered = SDL_PointInRect(&mousePos, &area);
+  bool isMouseDown = (mouseState & SDL_BUTTON_LMASK);
+  bool isJustPressed = GameManager::Get()->IsMouseJustPressed();
+  bool isJustReleased = GameManager::Get()->IsMouseJustReleased();
+
+  if (isHovered) {
+    if (isJustPressed) {
+      state = State::PRESSED;
+    } else if (isJustReleased && state == State::PRESSED) {
+      if (onClick)
         onClick();
-      }
-      state = isHovered ? State::HOVERED : State::NORMAL;
+      state = State::HOVERED;
+    } else if (state != State::PRESSED) {
+      state = State::HOVERED;
     }
-    return;
-  }
-  if (state != State::PRESSED) {
-    state = isHovered ? State::HOVERED : State::NORMAL;
+  } else {
+    if (isJustReleased && state == State::PRESSED) {
+      state = State::NORMAL;
+    }
+    if (state != State::PRESSED) {
+      state = State::NORMAL;
+    }
   }
 }
 
 void BOButton::Draw() {
 
-  SDL_FRect* drawRect = GetBounds();
   int stateIndex = static_cast<int>(state);
-
-  if (textures[stateIndex].id != 0) {
-    DrawNineSlice(textures[stateIndex], drawRect, NINE_SLICE_MARGIN, WHITE);
-  }
-  const Font &font = LangManager::GetFont();
-  float fontSize = (float)font.baseSize;
-
-  DrawTextEx(font, displayText.c_str(), cachedTextPos, fontSize, 1.0f,
-             TEXT_COLORS[stateIndex]);
-}
-
-void BOButton::DrawNineSlice(Texture2D tex, SDL_FRect* rect, float margin,
-                            Color tint) {
-  float w = (float)tex.width;
-  float h = (float)tex.height;
-  SDL_FRect* src[9] = {
-
-      {0, 0, margin, margin},
-      {margin, 0, w - 2 * margin, margin},
-      {w - margin, 0, margin, margin},
-
-      {0, margin, margin, h - 2 * margin},
-      {margin, margin, w - 2 * margin, h - 2 * margin},
-      {w - margin, margin, margin, h - 2 * margin},
-
-      {0, h - margin, margin, margin},
-      {margin, h - margin, w - 2 * margin, margin},
-      {w - margin, h - margin, margin, margin}};
-  SDL_FRect* dst[9] = {
-
-      {rect.x, rect.y, margin, margin},
-      {rect.x + margin, rect.y, rect.width - 2 * margin, margin},
-      {rect.x + rect.width - margin, rect.y, margin, margin},
-
-      {rect.x, rect.y + margin, margin, rect.height - 2 * margin},
-      {rect.x + margin, rect.y + margin, rect.width - 2 * margin,
-       rect.height - 2 * margin},
-      {rect.x + rect.width - margin, rect.y + margin, margin,
-       rect.height - 2 * margin},
-
-      {rect.x, rect.y + rect.height - margin, margin, margin},
-      {rect.x + margin, rect.y + rect.height - margin, rect.width - 2 * margin,
-       margin},
-      {rect.x + rect.width - margin, rect.y + rect.height - margin, margin,
-       margin}};
-  for (int i = 0; i < 9; i++) {
-    DrawTexturePro(tex, src[i], dst[i], {0, 0}, 0, tint);
-  }
+  int margin = 26;
+  images[stateIndex]->Draw9Grid(margin);
+  text.Draw();
 }

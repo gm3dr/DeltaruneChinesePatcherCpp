@@ -17,8 +17,6 @@ private:
   std::string FindReadmeFile() const;
   std::string LoadReadmeContent(const std::string &filename) const;
   void RefreshText() override;
-
-private:
   BOScrollText* readmeText = nullptr;
 };
 

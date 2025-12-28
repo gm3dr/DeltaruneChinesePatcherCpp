@@ -1,16 +1,20 @@
 ﻿#include "BOText.h"
 #include "../engine/LangManager.h"
+#include <SDL3_ttf/SDL_ttf.h>
 
-BOText::BOText(const std::string &key, SDL_FPoint* p, Color c, bool center, int siz,
-               float a)
+BOText::BOText(const std::string &key, SDL_Point p, SDL_Color c, bool center,
+               int siz, float a)
     : langKey(key), pos(p), color(c), alpha(a), centered(center) {
 
   if (siz == DEFAULT_FONT_SIZE) {
-    fontSize = LangManager::GetFont().baseSize;
+    fontSize = LangManager::GetFontSize();
   } else {
     fontSize = siz;
   }
-
+  if (key == "") {
+    langKey = " ";
+  }
+  SDL_SetTextureScaleMode(textTexture, SDL_SCALEMODE_NEAREST);
   RefreshText();
 }
 
@@ -47,36 +51,57 @@ void BOText::SetText(const std::string &newKey) {
   }
 }
 
-void BOText::SetPosition(SDL_FPoint* p) {
+void BOText::SetPosition(SDL_Point p) {
   pos = p;
   RefreshText();
 }
 
-SDL_FPoint* BOText::GetPosition() const { return pos; }
+SDL_Point BOText::GetPosition() const { return pos; }
 
-void BOText::SetColor(Color c) { color = c; }
+void BOText::SetColor(SDL_Color c) { color = c; }
 
 void BOText::SetAlpha(float a) { alpha = a; }
 
-SDL_FPoint* BOText::GetSize() const {
-  return MeasureTextEx(LangManager::GetFont(), displayText.c_str(),
-                       (float)fontSize, 1.0f);
-}
+SDL_Point BOText::GetSize() const { return {drawRect.w, drawRect.h}; }
 
 void BOText::RefreshText() {
   std::string rawText = LangManager::GetText(langKey);
   displayText = ProcessPlaceholders(rawText);
-
-  SDL_FPoint* textSize = MeasureTextEx(LangManager::GetFont(), displayText.c_str(),
-                                   (float)fontSize, 1.0f);
-
-  drawPos.x = pos.x - (centered ? textSize.x / 2.0f : 0.0f);
-  drawPos.y = pos.y;
+  if (textTexture) {
+    SDL_DestroyTexture(textTexture);
+    textTexture = nullptr;
+  }
+  SDL_Surface *surface = TTF_RenderText_Blended(LangManager::GetFont(),
+                                                displayText.c_str(), 0, WHITE);
+  if (!surface) {
+    LogManager::Error(std::string("Can't create text surface:") +
+                      SDL_GetError());
+    return;
+  }
+  textTexture = SDL_CreateTextureFromSurface(renderer, surface);
+  if (!textTexture) {
+    LogManager::Error(std::string("Can't create text texture:") +
+                      SDL_GetError());
+    SDL_DestroySurface(surface);
+    return;
+  }
+  SDL_DestroySurface(surface);
+  float w, h;
+  SDL_GetTextureSize(textTexture, &w, &h);
+  drawRect.w = (int)w;
+  drawRect.h = (int)h;
+  drawRect.x = pos.x - (centered ? drawRect.w / 2.0f : 0.0f);
+  drawRect.y = pos.y;
 }
 
 void BOText::Update(float dt) {}
 
 void BOText::Draw() {
-  DrawTextEx(LangManager::GetFont(), displayText.c_str(), drawPos,
-             (float)fontSize, 1.0f, Fade(color, alpha));
+  if (!textTexture)
+    return;
+  SDL_SetTextureColorMod(textTexture, color.r, color.g, color.b);
+  SDL_SetTextureAlphaMod(textTexture, (Uint8)(alpha * 255));
+  SDL_FRect dst = {(float)drawRect.x, (float)drawRect.y, (float)drawRect.w,
+                   (float)drawRect.h};
+  SDL_RenderTexture(renderer, textTexture, nullptr, &dst);
 }

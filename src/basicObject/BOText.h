@@ -7,14 +7,15 @@
 
 class BOText : public GameObject {
 protected:
+  SDL_Texture *textTexture = nullptr;
+  SDL_Rect drawRect{};
   std::string displayText;
   std::string langKey;
   std::map<std::string, std::string> params;
 
-  SDL_FPoint* pos{};
-  SDL_FPoint* drawPos{};
+  SDL_Point pos{};
   int fontSize{};
-  Color color{WHITE};
+  SDL_Color color = WHITE;
   float alpha{1.0f};
   bool centered{false};
 
@@ -23,8 +24,9 @@ protected:
 public:
   static constexpr int DEFAULT_FONT_SIZE = -1;
 
-  BOText(const std::string &key, SDL_FPoint* p, Color c = WHITE, bool center = false,
-        int siz = DEFAULT_FONT_SIZE, float a = 1.0f);
+  BOText(const std::string &key, SDL_Point p,
+         SDL_Color c = WHITE, bool center = false,
+         int siz = DEFAULT_FONT_SIZE, float a = 1.0f);
 
   ~BOText() override = default;
 
@@ -33,11 +35,11 @@ public:
   void SetParam(const std::string &key, int value);
 
   void SetText(const std::string &newKey);
-  void SetPosition(SDL_FPoint* p);
-  void SetColor(Color c);
+  void SetPosition(SDL_Point p);
+  void SetColor(SDL_Color c);
   void SetAlpha(float a);
-  SDL_FPoint* GetSize() const;
-  SDL_FPoint* GetPosition() const;
+  SDL_Point GetSize() const;
+  SDL_Point GetPosition() const;
 
   void RefreshText() override;
   void Update(float deltaTime) override;

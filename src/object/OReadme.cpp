@@ -3,7 +3,6 @@
 
 #include "../engine/GameManager.h"
 #include "../engine/LogManager.h"
-
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -14,10 +13,10 @@ OReadme::OReadme() {
   std::string filename = FindReadmeFile();
   std::string content = LoadReadmeContent(filename);
 
-  if (content == "") content = "Readme.NotFound";
-
-  readmeText = new BOScrollText(content, {280, 150, 630, 450}, WHITE,
-                                LangManager::GetFont().baseSize * 3 / 4);
+  if (content == "")
+    content = "Readme.NotFound";
+  readmeText = new BOScrollText(content, {280, 150}, 450, WHITE,
+                                LangManager::GetFontSize() * 3 / 4);
 }
 
 OReadme::~OReadme() { delete readmeText; }
@@ -32,9 +31,7 @@ void OReadme::Draw() {
     readmeText->Draw();
 }
 
-void OReadme::RefreshText() {
-  readmeText->RefreshText();
-}
+void OReadme::RefreshText() { readmeText->RefreshText(); }
 std::string OReadme::FindReadmeFile() const {
   std::string lang = GameManager::Get()->GetCurrentLanguage();
 

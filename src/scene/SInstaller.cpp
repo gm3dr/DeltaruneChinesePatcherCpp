@@ -3,16 +3,17 @@
 #include "../basicObject/BOImage.h"
 #include "../basicObject/BOText.h"
 #include "../engine/GameManager.h"
+#include "../engine/GameUtil.h"
 #include "../engine/LangManager.h"
 #include "../engine/LogManager.h"
 #include "../object/OCheckGamePath.h"
 #include "../object/OInstallPatch.h"
 #include "../object/OPatchValue.h"
 #include "../object/OReadme.h"
-#include "tinyfiledialogs.h"
+#include "SDL3/SDL_dialog.h"
 
 SInstaller::SInstaller() {
-  int mainFontSize = LangManager::GetFont().baseSize;
+  int mainFontSize = LangManager::GetFontSize();
   int smallFontSize = mainFontSize * 3 / 4;
   int largeFontSize = mainFontSize * 3 / 2;
   readmeText = new OReadme();
@@ -27,56 +28,59 @@ SInstaller::SInstaller() {
       new BOText("Meta.LanguageName", {120, 620}, WHITE, true, smallFontSize);
   currentGamePath = new BOText("", {290, 60}, WHITE, false, smallFontSize);
   gamePathState = new BOText("", {290, 100}, YELLOW, false, smallFontSize);
-  browsePathButton = new BOButton("Patch.BrowseGamePath", {290, 150}, {200, 80}),
+  browsePathButton = new BOButton("Patch.BrowseGamePath", {290, 150, 200, 80}),
   downloadPatchButton =
-      new BOButton("Patch.DownloadPatch", {290, 300}, {200, 80});
-  installPatchButton =
-      new BOButton("Patch.InstallPatch", {510, 300}, {200, 80});
+      new BOButton("Patch.DownloadPatch", {290, 300, 200, 80});
+  installPatchButton = new BOButton("Patch.InstallPatch", {510, 300, 200, 80});
   uninstallPatchButton =
-      new BOButton("Patch.UninstallPatch", {730, 300}, {200, 80});
+      new BOButton("Patch.UninstallPatch", {730, 300, 200, 80});
 
-  background = {
-      new BOImage("image/bg_static.png", {0, 0}, {960, 510}, Fade(WHITE, 0.8f)),
-      new BOImage("image/bg_anim.png", {0, 510}, 5, 0.2f, {960, 210},
-                  Fade(WHITE, 0.8f))};
+  background = {new BOImage("image/bg_static.png", {0, 0}, {960, 510}, WHITE),
+                new BOImage("image/bg_anim.png", {0, 510}, 5, 0.2f, {960, 210},
+                            GameUtil::Fade(WHITE, 0.8f))};
 
   leftBar = {
-      new BOImage("image/black.png", {0, 0}, {240, 720}, Fade(WHITE, 0.5f)),
+      new BOImage("image/black.png", {0, 0}, {240, 720},
+                  GameUtil::Fade(WHITE, 0.5f)),
       new BOImage("image/app_icon.png", {56, 40}, {128, 128}),
       new BOText("Meta.TitleShort", {120, 200}, YELLOW, true),
-      new BOButton("Button.Readme", {40, 300}, {160, 80},
+      new BOButton("Button.Readme", {40, 300, 160, 80},
                    [this]() { SwitchPage(Page::README); }),
-      new BOButton("Button.Patch", {40, 390}, {160, 80},
+      new BOButton("Button.Patch", {40, 390, 160, 80},
                    [this]() { SwitchPage(Page::PATCH); }),
-      new BOButton("Button.About", {40, 480}, {160, 80},
+      new BOButton("Button.About", {40, 480, 160, 80},
                    [this]() { SwitchPage(Page::ABOUT); }),
-      new BOButton("<", {10, 600}, {60, 60},
+      new BOButton("<", {10, 600, 60, 60},
                    [this]() { GameManager::Get()->StepLanguage(-1); }),
       languageText,
-      new BOButton(">", {170, 600}, {60, 60},
+      new BOButton(">", {170, 600, 60, 60},
                    [this]() { GameManager::Get()->StepLanguage(1); }),
   };
 
-  patchPage = {
-      new BOImage("image/black.png", {270, 20}, {670, 400}, Fade(WHITE, 0.5f)),
-      new BOImage("image/black.png", {270, 450}, {670, 250}, Fade(WHITE, 0.5f)),
-      new BOText("GamePath.Label", {290, 25}),
-      currentGamePath,
-      gamePathState,
-      browsePathButton,
-      downloadPatchButton,
-      installPatch,
-      installPatchButton,
-      uninstallPatchButton};
+  patchPage = {new BOImage("image/black.png", {270, 20}, {670, 400},
+                           GameUtil::Fade(WHITE, 0.5f)),
+               new BOImage("image/black.png", {270, 450}, {670, 250},
+                           GameUtil::Fade(WHITE, 0.5f)),
+               new BOText("GamePath.Label", {290, 25}),
+               currentGamePath,
+               gamePathState,
+               browsePathButton,
+               downloadPatchButton,
+               installPatch,
+               installPatchButton,
+               uninstallPatchButton};
 
   readmePage = {
-      new BOImage("image/black.png", {270, 20}, {670, 680}, Fade(WHITE, 0.5f)),
+      new BOImage("image/black.png", {270, 20}, {670, 680},
+                  GameUtil::Fade(WHITE, 0.5f)),
       new BOText("Readme.Title", {280, 40}, YELLOW, false, largeFontSize),
-      new BOImage("image/black.png", {280, 150}, {680, 450}, Fade(WHITE, 0.5f)),
+      new BOImage("image/black.png", {280, 150}, {680, 450},
+                  GameUtil::Fade(WHITE, 0.5f)),
       readmeText, contactText};
 
   aboutPage = {
-      new BOImage("image/black.png", {270, 20}, {670, 680}, Fade(WHITE, 0.5f)),
+      new BOImage("image/black.png", {270, 20}, {670, 680},
+                  GameUtil::Fade(WHITE, 0.5f)),
       versionText,
       new BOText("About.ContribTitle", {280, 280}, YELLOW),
       new BOText("About.ContribList", {280, 350}),
@@ -113,12 +117,17 @@ void SInstaller::Init() {
   };
 
   browsePathButton->SetCallback([this]() {
-    char *result = tinyfd_selectFolderDialog(
-        LangManager::GetText("MsgBox.SelectFolder").c_str(), ".");
-    if (result) {
-      currentGamePath->SetText(result);
-      gamePathDetector->SetPath(result);
-    }
+    SDL_ShowOpenFolderDialog(
+        [](void *userdata, const char *const *filelist, int filter) {
+          if (filelist && *filelist) {
+            auto *self = static_cast<SInstaller *>(userdata);
+            self->currentGamePath->SetText(*filelist);
+            self->gamePathDetector->SetPath(*filelist);
+          } else {
+            LogManager::Info("User cancelled path select.");
+          }
+        },
+        this, GameManager::Get()->GetWindow(), nullptr, false);
   });
   gamePathDetector->OnError = [this](const std::string &msg) {
     gamePathState->SetText(msg);

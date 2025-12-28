@@ -5,10 +5,10 @@
 #include <iomanip>
 #include <mutex>
 #include <sstream>
-#include <tinyfiledialogs.h>
 
 bool LogManager::initialized = false;
 bool LogManager::hasCritical = false;
+std::string LogManager::criticalMsg = "";
 
 void LogManager::Init() {
   std::vector<std::string> logFileList = {"log.txt", "error.txt"};
@@ -43,12 +43,9 @@ void LogManager::Error(const std::string &message) {
 }
 
 void LogManager::Critical(const std::string &message) {
-  if (hasCritical)
-    return;
-  hasCritical = true;
   Write("@@ [Fatal Error] ", message, true);
-  tinyfd_messageBox("Fatal Error", (message + "\nProgram will abort.").c_str(),
-                    "ok", "error", 1);
+  hasCritical = true;
+  criticalMsg = message;
 }
 
 void LogManager::Write(const std::string &prefix, const std::string &message,

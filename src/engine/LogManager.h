@@ -17,13 +17,16 @@ public:
   static void Warning(const std::string &message);
   static void Error(const std::string &message);
   static void Critical(const std::string &message);
+  static bool HasCritical() {return hasCritical;}
+  static std::string GetCriticalMsg() {return criticalMsg;}
 
 private:
   static void Write(const std::string &prefix, const std::string &message, bool error);
   static inline std::mutex logMutex;
   static inline std::vector<LogCallback> callbacks;
-  static bool hasCritical;
   static bool initialized;
+  static bool hasCritical;
+  static std::string criticalMsg;
 };
 
 #endif

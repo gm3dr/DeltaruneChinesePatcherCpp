@@ -21,6 +21,12 @@ LangManager::~LangManager() {
   }
 }
 
+int LangManager::GetFontSize() {
+  if (!mainFont) {
+    return -1;
+  }
+  return TTF_GetFontSize(mainFont);
+}
 bool LangManager::Init(GameConfig &settings) {
   if (!LoadFont(settings))
     return false;

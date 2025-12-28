@@ -1,4 +1,5 @@
 ﻿#include "GameUtil.h"
+#include <SDL3/SDL.h>
 #include <picosha2.h>
 #include <string>
 
@@ -15,7 +16,14 @@ std::string GameUtil::CalcFileSha256(const std::string &path) {
   std::string outHex = picosha2::hash256_hex_string(data);
   return outHex;
 }
+SDL_Color GameUtil::Fade(SDL_Color color, float alpha) {
+  if (alpha < 0.0f)
+    alpha = 0.0f;
+  if (alpha > 1.0f)
+    alpha = 1.0f;
 
+  return SDL_Color{color.r, color.g, color.b, (Uint8)(alpha * 255)};
+}
 std::string GameUtil::ConvertPath(const std::filesystem::path &p) {
 #ifdef _WIN32
   std::filesystem::path newPath = p;

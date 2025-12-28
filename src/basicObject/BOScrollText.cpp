@@ -1,45 +1,36 @@
 ﻿#include "BOScrollText.h"
-#include "../engine/LangManager.h"
-BOScrollText::BOScrollText(const std::string &key, SDL_FRect* area, Color c,
-                         int siz)
-    : BOText(key, {area.x, area.y}, c, false, siz), viewRect(area) {
-  CalculateHeight();
-}
-
-void BOScrollText::RefreshText() {
-  BOText::RefreshText();
-  CalculateHeight();
-}
-
-void BOScrollText::CalculateHeight() {
-  const Font &font = LangManager::GetFont();
-  SDL_FPoint* measure =
-      MeasureTextEx(font, displayText.c_str(), (float)fontSize, 1.0f);
-  totalContentHeight = measure.y;
-}
+#include "../engine/GameManager.h"
+BOScrollText::BOScrollText(const std::string &key, SDL_Point p, int vh,
+                           SDL_Color c, int siz)
+    : BOText(key, p, c, false, siz), viewHeight(vh) {}
 
 void BOScrollText::Update(float dt) {
-  SDL_FPoint* mouse = GetMousePosition();
-  if (!CheckCollisionPointRec(mouse, viewRect))
+  float mouseX, mouseY;
+  SDL_GetMouseState(&mouseX, &mouseY);
+
+  SDL_Point mousePos = {(int)mouseX, (int)mouseY};
+  SDL_Rect viewRect = {drawRect.x, drawRect.y, drawRect.w, viewHeight};
+
+  if (!SDL_PointInRect(&mousePos, &viewRect))
     return;
 
-  SDL_FPoint* wheelMove = GetMouseWheelMoveV();
-  if (wheelMove.y != 0.0f) {
-    SetScrollOffset(scrollOffset + wheelMove.y * 20.0f);
+  float moveY = GameManager::Get()->GetMouseWheelMove().y;
+  if (moveY != 0.0f) {
+    SetScrollOffset(scrollOffset + moveY * 20.0f);
   }
 }
 
 void BOScrollText::Draw() {
-  BeginScissorMode((int)viewRect.x, (int)viewRect.y, (int)viewRect.width,
-                   (int)viewRect.height);
+  if (!textTexture)
+    return;
+  SDL_FRect src = {0, (float)-scrollOffset, (float)drawRect.w,
+                   (float)viewHeight};
+  SDL_FRect dst = {(float)drawRect.x, (float)drawRect.y, (float)drawRect.w,
+                   (float)viewHeight};
 
-  SDL_FPoint* savedDrawPos = drawPos;
-  drawPos.y += scrollOffset;
-
-  BOText::Draw();
-
-  drawPos = savedDrawPos;
-  EndScissorMode();
+  SDL_SetTextureColorMod(textTexture, color.r, color.g, color.b);
+  SDL_SetTextureAlphaMod(textTexture, (Uint8)(alpha * 255));
+  SDL_RenderTexture(renderer, textTexture, &src, &dst);
 }
 
 void BOScrollText::SetScrollOffset(float offset) {
@@ -47,8 +38,8 @@ void BOScrollText::SetScrollOffset(float offset) {
   if (scrollOffset > 0.0f) {
     scrollOffset = 0.0f;
   }
-  if (totalContentHeight > viewRect.height) {
-    float maxScroll = -(totalContentHeight - viewRect.height);
+  if (drawRect.h > viewHeight) {
+    float maxScroll = -(drawRect.h - viewHeight);
     if (scrollOffset < maxScroll) {
       scrollOffset = maxScroll;
     }

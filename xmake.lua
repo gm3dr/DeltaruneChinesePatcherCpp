@@ -1,8 +1,7 @@
 add_requires(
     "cpr",
     "nlohmann_json",
-    "picosha2",
-    "tinyfiledialogs"
+    "picosha2"
 )
 add_rules("mode.debug", "mode.release")
 set_languages("c++20")
@@ -28,8 +27,7 @@ target("deltarune_cnpatcher")
     add_packages(
         "cpr",
         "nlohmann_json",
-        "picosha2",
-        "tinyfiledialogs"
+        "picosha2"
     )
     add_packages(table.unpack(vendored_libs))
     -- defines
@@ -45,11 +43,7 @@ target("deltarune_cnpatcher")
 
     if is_plat("windows") and is_mode("release") then
         add_files("app/win.rc")
-        add_ldflags(
-            "/SUBSYSTEM:WINDOWS",
-            "/ENTRY:mainCRTStartup",
-            { force = true }
-        )
+        add_ldflags("/SUBSYSTEM:WINDOWS");
     end
 
     after_build(function (target)
@@ -58,4 +52,5 @@ target("deltarune_cnpatcher")
         os.cp(path.join(os.projectdir(), "image"), outdir)
         os.cp(path.join(os.projectdir(), "lang"), outdir)
         os.cp(path.join(os.projectdir(), "readme*.txt"), outdir)
+        os.cp(path.join(os.projectdir(), "dlls/*.dll"), outdir)
     end)
