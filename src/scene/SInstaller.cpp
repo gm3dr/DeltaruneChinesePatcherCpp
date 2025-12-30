@@ -10,9 +10,8 @@
 #include "../object/OReadme.h"
 
 SInstaller::SInstaller() {
-  int mainFontSize = 1;
-  int smallFontSize = mainFontSize * 3 / 4;
-  int largeFontSize = mainFontSize * 3 / 2;
+  float smallFontSize = 1.5;
+  float largeFontSize = 3;
   readmeText = new OReadme();
   patchValue = new OPatchValue();
   patchValue->Download();

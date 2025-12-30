@@ -2,8 +2,8 @@
 #include "../engine/LangManager.h"
 
 BOText::BOText(const std::string &key, SDL_Point p, SDL_Color c, bool center,
-               float scale, float a)
-    : pos(p), color(c), alpha(a), centered(center), scale(scale) {
+               float s, float a)
+    : pos(p), color(c), alpha(a), centered(center), scale(s) {
   SetText(key);
 }
 
@@ -25,10 +25,9 @@ void BOText::SetText(const std::string &content, bool plain) {
 }
 
 void BOText::RefreshText() {
-  displayText = LangManager::GetText(langKey);
   auto glyphIds = DecodeUTF8(displayText);
-  int totalW = 0;
-  int maxH = LangManager::GetBMLineHeight() * scale;
+  float totalW = 0;
+  float lineHeight = (float)LangManager::GetBMLineHeight() * scale;
   uint32_t prevId = 0;
 
   for (uint32_t id : glyphIds) {
@@ -36,16 +35,17 @@ void BOText::RefreshText() {
     if (!g)
       continue;
 
-    totalW += g->xadvance;
+    totalW += (float)g->xadvance * scale;
+
     if (prevId != 0) {
-      totalW += LangManager::GetBMKerning(prevId, id) * scale;
+      totalW += (float)LangManager::GetBMKerning(prevId, id) * scale;
     }
     prevId = id;
   }
 
-  drawRect.w = totalW;
-  drawRect.h = maxH;
-  drawRect.x = pos.x - (centered ? (totalW / 2) : 0);
+  drawRect.w = (int)totalW;
+  drawRect.h = (int)lineHeight;
+  drawRect.x = (int)(pos.x - (centered ? (totalW / 2.0f) : 0));
   drawRect.y = pos.y;
 }
 
@@ -79,7 +79,6 @@ void BOText::Draw() {
   if (!tex || displayText.empty())
     return;
 
-  // 设置全局色调和透明度
   SDL_SetTextureColorMod(tex, color.r, color.g, color.b);
   SDL_SetTextureAlphaMod(tex, (Uint8)(alpha * 255.0f));
 
@@ -91,7 +90,7 @@ void BOText::Draw() {
   for (uint32_t id : glyphIds) {
     if (id == '\n') {
       curX = (float)drawRect.x;
-      curY += (float)drawRect.h;
+      curY += (float)drawRect.h; // 这里的 drawRect.h 已经是缩放后的行高了
       prevId = 0;
       continue;
     }
@@ -100,23 +99,21 @@ void BOText::Draw() {
     if (!g)
       continue;
 
-    // 应用字间距微调
     if (prevId != 0) {
-      curX += LangManager::GetBMKerning(prevId, id) * scale;
+      curX += (float)LangManager::GetBMKerning(prevId, id) * scale;
     }
 
-    // 源矩形 (纹理图集)
     SDL_FRect src = {(float)g->x, (float)g->y, (float)g->width,
                      (float)g->height};
 
-    // 目标矩形 (屏幕位置 + 偏移)
-    SDL_FRect dst = {curX + g->xoffset, curY + g->yoffset, (float)(g->width * scale),
-                     (float)(g->height * scale)};
+    // 所有的位置偏移和大小都要乘以 scale
+    SDL_FRect dst = {curX + (float)g->xoffset * scale,
+                     curY + (float)g->yoffset * scale, (float)g->width * scale,
+                     (float)g->height * scale};
 
     SDL_RenderTexture(renderer, tex, &src, &dst);
 
-    // 步进
-    curX += g->xadvance;
+    curX += (float)g->xadvance * scale;
     prevId = id;
   }
 }
@@ -142,6 +139,7 @@ void BOText::SetPosition(SDL_Point p) {
 SDL_Point BOText::GetPosition() const { return pos; }
 void BOText::SetColor(SDL_Color c) { color = c; }
 void BOText::SetAlpha(float a) { alpha = a; }
+void BOText::SetScale(float s) { scale = s; }
 float BOText::GetScale() const { return scale; }
 void BOText::Update(float dt) {}
 

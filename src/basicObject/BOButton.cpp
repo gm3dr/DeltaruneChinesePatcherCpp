@@ -1,7 +1,8 @@
 ﻿#include "BOButton.h"
-#include "BOImage.h"
 #include "../engine/GameManager.h"
 #include "../engine/LangManager.h"
+#include "BOImage.h"
+
 
 constexpr const char *BOButton::TEXTURE_PATHS[4];
 constexpr SDL_Color BOButton::TEXT_COLORS[4];
@@ -23,7 +24,8 @@ void BOButton::RefreshText() {
   text.RefreshText();
   SDL_Point pos = text.GetPosition();
   pos.x = area.x + area.w / 2.0f;
-  pos.y = area.y + area.h / 2.0 - LangManager::GetBMLineHeight() * text.GetScale() / 2.0;
+  pos.y = area.y + area.h / 2.0 -
+          LangManager::GetBMLineHeight() * text.GetScale() / 2.0;
   text.SetPosition(pos);
 }
 

@@ -1,8 +1,7 @@
 ﻿#ifndef O_README
 #define O_README
-
+#include "../basicObject/BOText.h"
 #include "../engine/GameObject.h"
-#include "../basicObject/BOScrollText.h"
 #include <string>
 
 class OReadme : public GameObject {
@@ -17,7 +16,7 @@ private:
   std::string FindReadmeFile() const;
   std::string LoadReadmeContent(const std::string &filename) const;
   void RefreshText() override;
-  BOScrollText* readmeText = nullptr;
+  BOText* readmeText = nullptr;
 };
 
 #endif

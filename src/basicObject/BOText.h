@@ -1,8 +1,9 @@
 ﻿#ifndef O_TEXT_H
 #define O_TEXT_H
 #include "../engine/GameObject.h"
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
+
 
 class BOText : public GameObject {
 protected:
@@ -23,8 +24,8 @@ protected:
 public:
   static constexpr float DEFAULT_FONT_SCALE = 2.0;
   BOText(const std::string &key, SDL_Point p,
-         SDL_Color c = {255, 255, 255, 255}, bool center = false, float scale = DEFAULT_FONT_SCALE,
-         float a = 1.0f);
+         SDL_Color c = {255, 255, 255, 255}, bool center = false,
+         float scale = DEFAULT_FONT_SCALE, float a = 1.0f);
   ~BOText() override = default;
 
   void SetParam(const std::string &key, const std::string &value);
@@ -35,7 +36,7 @@ public:
   void SetPosition(SDL_Point p);
   void SetColor(SDL_Color c);
   void SetAlpha(float a);
-  void SetScale();
+  void SetScale(float s);
   float GetScale() const;
   SDL_Point GetPosition() const;
   void RefreshText() override;
