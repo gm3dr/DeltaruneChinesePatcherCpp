@@ -58,7 +58,7 @@ const nlohmann::json GameGlobal::defaultSettings = {
 #ifdef _WIN32
          {"external/win/7z.exe",
           "d2c0045523cf053a6b43f9315e9672fc2535f06aeadd4ffa53c729cd8b2b6dfe"},
-         {"external/win/xdelta3.exe",
+         {"external/win/hpatchz.exe",
           "6855c01cf4a1662ba421e6f95370cf9afa2b3ab6c148473c63efe60d634dfb9a"},
 #else
          {"external/linux/7z",

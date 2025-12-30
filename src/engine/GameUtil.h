@@ -9,6 +9,8 @@
 namespace GameUtil {
 std::string CalcFileSha256(const std::string &path);
 std::string ConvertPath(const std::filesystem::path &p);
+int RunCommand(const std::string &exe, const std::vector<std::string> &args,
+               std::string &out, std::string &err);
 #ifdef _WIN32
 std::wstring Utf8ToWide(const std::string &s);
 std::string WideToUtf8(const std::wstring &ws);

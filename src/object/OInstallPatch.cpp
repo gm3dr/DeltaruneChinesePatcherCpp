@@ -328,32 +328,23 @@ bool OInstallPatch::ExtractPatch(const fs::path &patchFile) {
   sevenZip = fs::current_path() / "external/linux/7z";
 #endif
 
-  fs::path errLog = tempDir / "err-7z.log";
   if (!fs::exists(patchFile)) {
     LogManager::Error("[Install] Patch archive not found: " +
                       patchFile.string());
     return false;
   }
 
-  std::string cmd = GameUtil::ConvertPath(sevenZip) + " x \"" +
-                    GameUtil::ConvertPath(patchFile) + "\" -o" +
-                    GameUtil::ConvertPath(tempDir) + " -aoa 2> \"" +
-                    GameUtil::ConvertPath(errLog) + "\"";
+  std::vector<std::string> args = {"x", patchFile.string(),
+                                   "-o" + tempDir.string(), "-aoa"};
 
-  LogManager::Info("7z execute command: " + cmd);
-  int ret = std::system(cmd.c_str());
+  std::string stdoutStr, stderrStr;
+  int ret = GameUtil::RunCommand(GameUtil::ConvertPath(sevenZip), args,
+                                 stdoutStr, stderrStr);
+  LogManager::Info("[7z stdout]\n" + stdoutStr);
   if (ret != 0) {
-    std::string err;
-    if (fs::exists(errLog)) {
-      std::ifstream in(errLog);
-      err.assign(std::istreambuf_iterator<char>(in),
-                 std::istreambuf_iterator<char>());
-    }
-
     LogManager::Error("[Install] 7z failed, code=" + std::to_string(ret));
-    if (!err.empty()) {
-      LogManager::Error("[7z stderr]\n" + err);
-    }
+    if (!stderrStr.empty())
+      LogManager::Error("[7z stderr]\n" + stderrStr);
     return false;
   }
 
@@ -365,14 +356,13 @@ bool OInstallPatch::ApplyDelta(const fs::path &gamePath) {
   LogManager::Info("[Install] Applying delta patches...");
   fs::path xDelta3;
 #ifdef _WIN32
-  xDelta3 = fs::current_path() / "external/win/xdelta3.exe";
+  xDelta3 = fs::current_path() / "external/win/hpatchz.exe";
 #else
-  xDelta3 = fs::current_path() / "external/linux/xdelta3";
+  xDelta3 = fs::current_path() / "external/linux/hpatchz";
 #endif
 
   auto deltaList =
       GameManager::Get()->Settings().Get<nlohmann::json>("patchFileXDelta");
-  fs::path errLog = tempDir / "err-xdelta.log";
 
   try {
     for (auto &[key, value] : deltaList.items()) {
@@ -386,26 +376,20 @@ bool OInstallPatch::ApplyDelta(const fs::path &gamePath) {
       }
       if (fs::exists(newFile))
         fs::remove(newFile);
-      std::string cmd = GameUtil::ConvertPath(xDelta3) + " -d -s \"" +
-                        GameUtil::ConvertPath(oldFile) + "\" \"" +
-                        GameUtil::ConvertPath(deltaPath) + "\" \"" +
-                        GameUtil::ConvertPath(newFile) + "\" 2> \"" +
-                        GameUtil::ConvertPath(errLog) + "\"";
 
-      int ret = std::system(cmd.c_str());
+      std::vector<std::string> args = {oldFile.string(), deltaPath.string(),
+                                       newFile.string()};
+
+      std::string stdoutStr, stderrStr;
+      int ret = GameUtil::RunCommand(GameUtil::ConvertPath(xDelta3), args,
+                                     stdoutStr, stderrStr);
+      LogManager::Info("[xdelta stdout]\n" + stdoutStr);
       if (ret != 0) {
-        std::string err;
-        if (fs::exists(errLog)) {
-          std::ifstream in(errLog);
-          err.assign(std::istreambuf_iterator<char>(in),
-                     std::istreambuf_iterator<char>());
-        }
-
-        LogManager::Error("[Install] xdelta failed for: " + std::string(value) +
-                          ", code=" + std::to_string(ret));
-        if (!err.empty()) {
-          LogManager::Error("[xdelta stderr]\n" + err);
-        }
+        LogManager::Error(
+            "[Install] xdelta failed for: " + value.get<std::string>() +
+            ", code=" + std::to_string(ret));
+        if (!stderrStr.empty())
+          LogManager::Error("[xdelta stderr]\n" + stderrStr);
         return false;
       }
     }
