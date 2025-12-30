@@ -72,4 +72,117 @@ std::string GameUtil::GetRegValue(HKEY hKey, const std::string &subKey,
 
   return WideToUtf8(wPath);
 }
+
+int GameUtil::RunCommand(const std::string &exe,
+                         const std::vector<std::string> &args, std::string &out,
+                         std::string &err) {
+  HANDLE hOutRead, hOutWrite, hErrRead, hErrWrite;
+  SECURITY_ATTRIBUTES sa{sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE};
+
+  // 创建管道
+  if (!CreatePipe(&hOutRead, &hOutWrite, &sa, 0))
+    return -1;
+  if (!CreatePipe(&hErrRead, &hErrWrite, &sa, 0))
+    return -1;
+  SetHandleInformation(hOutRead, HANDLE_FLAG_INHERIT, 0);
+  SetHandleInformation(hErrRead, HANDLE_FLAG_INHERIT, 0);
+
+  STARTUPINFOA si{};
+  si.cb = sizeof(si);
+  si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+  si.hStdOutput = hOutWrite;
+  si.hStdError = hErrWrite;
+  si.hStdInput = nullptr;
+
+  PROCESS_INFORMATION pi{};
+
+  // 拼接命令行
+  std::ostringstream oss;
+  oss << '"' << exe << '"';
+  for (const auto &arg : args)
+    oss << " \"" << arg << '"';
+  std::string cmd = oss.str();
+
+  if (!CreateProcessA(nullptr, cmd.data(), nullptr, nullptr, TRUE,
+                      CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
+    CloseHandle(hOutRead);
+    CloseHandle(hOutWrite);
+    CloseHandle(hErrRead);
+    CloseHandle(hErrWrite);
+    return -1;
+  }
+
+  CloseHandle(hOutWrite);
+  CloseHandle(hErrWrite);
+
+  char buffer[256];
+  DWORD n;
+  while (ReadFile(hOutRead, buffer, sizeof(buffer), &n, nullptr) && n > 0)
+    out.append(buffer, n);
+  while (ReadFile(hErrRead, buffer, sizeof(buffer), &n, nullptr) && n > 0)
+    err.append(buffer, n);
+
+  WaitForSingleObject(pi.hProcess, INFINITE);
+
+  DWORD exitCode = 0;
+  GetExitCodeProcess(pi.hProcess, &exitCode);
+  CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
+  CloseHandle(hOutRead);
+  CloseHandle(hErrRead);
+
+  return static_cast<int>(exitCode);
+}
+#else
+#include <fcntl.h>
+#include <iostream>
+#include <sstream>
+#include <sys/wait.h>
+#include <unistd.h>
+
+int GameUtil::RunCommand(const std::string &exe,
+                         const std::vector<std::string> &args, std::string &out,
+                         std::string &err) {
+  int outPipe[2], errPipe[2];
+  if (pipe(outPipe) != 0 || pipe(errPipe) != 0)
+    return -1;
+
+  pid_t pid = fork();
+  if (pid < 0)
+    return -1;
+  if (pid == 0) {
+    // 子进程
+    dup2(outPipe[1], STDOUT_FILENO);
+    dup2(errPipe[1], STDERR_FILENO);
+    close(outPipe[0]);
+    close(outPipe[1]);
+    close(errPipe[0]);
+    close(errPipe[1]);
+
+    std::vector<char *> argv;
+    argv.push_back(const_cast<char *>(exe.c_str()));
+    for (const auto &arg : args)
+      argv.push_back(const_cast<char *>(arg.c_str()));
+    argv.push_back(nullptr);
+    execv(exe.c_str(), argv.data());
+    _exit(127); // exec失败
+  }
+
+  // 父进程
+  close(outPipe[1]);
+  close(errPipe[1]);
+  char buffer[256];
+  ssize_t n;
+  while ((n = read(outPipe[0], buffer, sizeof(buffer))) > 0)
+    out.append(buffer, n);
+  while ((n = read(errPipe[0], buffer, sizeof(buffer))) > 0)
+    err.append(buffer, n);
+  close(outPipe[0]);
+  close(errPipe[0]);
+
+  int status = 0;
+  waitpid(pid, &status, 0);
+  return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+}
+
 #endif
