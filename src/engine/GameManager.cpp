@@ -16,8 +16,6 @@ const nlohmann::json GameGlobal::defaultSettings = {
     {"baseWidth", 960},
     {"baseHeight", 720},
     {"qqGroupCode", "1033065757"},
-    {"mainFont", "external/main.ttf"},
-    {"mainFontSize", 32},
     {"deltaruneAppId", "1671210"},
     {"deltaruneDepotId", "1671212"},
     {"patchRemoteUrl", "https://git.ws3917.space:29271/ws3917/"
@@ -123,7 +121,7 @@ void GameManager::Init() {
         "[Init] Failed to load window icon: image/app_icon.png");
   }
 
-  if (!LangManager::Init(settings)) {
+  if (!LangManager::Init(GameGlobal::renderer, settings)) {
     LogManager::Critical("[Init] Language system initialization failed.");
     return;
   }

@@ -3,7 +3,6 @@
 #include "../basicObject/BOImage.h"
 #include "../basicObject/BOText.h"
 #include "../engine/GameManager.h"
-#include "../engine/LangManager.h"
 #include "../engine/LogManager.h"
 #include "../object/OCheckGamePath.h"
 #include "../object/OInstallPatch.h"
@@ -11,7 +10,7 @@
 #include "../object/OReadme.h"
 
 SInstaller::SInstaller() {
-  int mainFontSize = LangManager::GetFontSize();
+  int mainFontSize = 1;
   int smallFontSize = mainFontSize * 3 / 4;
   int largeFontSize = mainFontSize * 3 / 2;
   readmeText = new OReadme();

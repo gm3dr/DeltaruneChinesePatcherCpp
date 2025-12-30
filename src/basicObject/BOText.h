@@ -1,49 +1,45 @@
 ﻿#ifndef O_TEXT_H
 #define O_TEXT_H
-
 #include "../engine/GameObject.h"
-#include <map>
+#include <unordered_map>
 #include <string>
 
 class BOText : public GameObject {
 protected:
-  SDL_Texture *textTexture = nullptr;
-  SDL_Rect drawRect{};
+  SDL_Rect drawRect = {0, 0, 0, 0};
   std::string displayText;
   std::string langKey;
-  std::map<std::string, std::string> params;
+  std::unordered_map<std::string, std::string> params;
 
   SDL_Point pos{};
-  int fontSize{};
-  SDL_Color color = WHITE;
+  SDL_Color color{WHITE};
   float alpha{1.0f};
   bool centered{false};
+  float scale;
 
   std::string ProcessPlaceholders(const std::string &text) const;
+  std::vector<uint32_t> DecodeUTF8(const std::string &str) const;
 
 public:
-  static constexpr int DEFAULT_FONT_SIZE = -1;
-
+  static constexpr float DEFAULT_FONT_SCALE = 2.0;
   BOText(const std::string &key, SDL_Point p,
-         SDL_Color c = WHITE, bool center = false,
-         int siz = DEFAULT_FONT_SIZE, float a = 1.0f);
-
+         SDL_Color c = {255, 255, 255, 255}, bool center = false, float scale = DEFAULT_FONT_SCALE,
+         float a = 1.0f);
   ~BOText() override = default;
 
   void SetParam(const std::string &key, const std::string &value);
   void SetParam(const std::string &key, float value);
   void SetParam(const std::string &key, int value);
 
-  void SetText(const std::string &newKey, bool plain = false);
+  void SetText(const std::string &content, bool plain = false);
   void SetPosition(SDL_Point p);
   void SetColor(SDL_Color c);
   void SetAlpha(float a);
-  SDL_Point GetSize() const;
+  void SetScale();
+  float GetScale() const;
   SDL_Point GetPosition() const;
-
   void RefreshText() override;
   void Update(float deltaTime) override;
   void Draw() override;
 };
-
 #endif

@@ -1,6 +1,4 @@
 ﻿#include "OReadme.h"
-#include "../engine/LangManager.h"
-
 #include "../engine/GameManager.h"
 #include "../engine/LogManager.h"
 #include <filesystem>
@@ -15,8 +13,7 @@ OReadme::OReadme() {
 
   if (content == "")
     content = "Readme.NotFound";
-  readmeText = new BOScrollText(content, {280, 150}, 450, WHITE,
-                                LangManager::GetFontSize() * 3 / 4);
+  readmeText = new BOScrollText(content, {280, 150}, 450, WHITE, 1);
 }
 
 OReadme::~OReadme() { delete readmeText; }

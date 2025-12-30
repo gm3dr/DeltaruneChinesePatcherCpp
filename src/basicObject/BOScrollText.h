@@ -10,7 +10,7 @@ protected:
 
 public:
   BOScrollText(const std::string &key, SDL_Point p, int vh,
-               SDL_Color c = WHITE, int siz = DEFAULT_FONT_SIZE);
+               SDL_Color c = WHITE, int siz = DEFAULT_FONT_SCALE);
 
   void Update(float deltaTime) override;
   void Draw() override;

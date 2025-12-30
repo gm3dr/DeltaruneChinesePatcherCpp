@@ -21,16 +21,14 @@ void BOScrollText::Update(float dt) {
 }
 
 void BOScrollText::Draw() {
-  if (!textTexture)
-    return;
   SDL_FRect src = {0, (float)-scrollOffset, (float)drawRect.w,
                    (float)viewHeight};
   SDL_FRect dst = {(float)drawRect.x, (float)drawRect.y, (float)drawRect.w,
                    (float)viewHeight};
 
-  SDL_SetTextureColorMod(textTexture, color.r, color.g, color.b);
-  SDL_SetTextureAlphaMod(textTexture, (Uint8)(alpha * 255));
-  SDL_RenderTexture(renderer, textTexture, &src, &dst);
+  // SDL_SetTextureColorMod(textTexture, color.r, color.g, color.b);
+  // SDL_SetTextureAlphaMod(textTexture, (Uint8)(alpha * 255));
+  // SDL_RenderTexture(renderer, textTexture, &src, &dst);
 }
 
 void BOScrollText::SetScrollOffset(float offset) {

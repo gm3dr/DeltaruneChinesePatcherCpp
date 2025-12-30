@@ -1,43 +1,10 @@
 ﻿#include "BOText.h"
 #include "../engine/LangManager.h"
-#include <SDL3_ttf/SDL_ttf.h>
 
 BOText::BOText(const std::string &key, SDL_Point p, SDL_Color c, bool center,
-               int siz, float a)
-    : pos(p), color(c), alpha(a), centered(center) {
-
-  if (siz == DEFAULT_FONT_SIZE) {
-    fontSize = LangManager::GetFontSize();
-  } else {
-    fontSize = siz;
-  }
+               float scale, float a)
+    : pos(p), color(c), alpha(a), centered(center), scale(scale) {
   SetText(key);
-}
-
-std::string BOText::ProcessPlaceholders(const std::string &text) const {
-  std::string result = text;
-  for (const auto &[k, v] : params) {
-    std::string placeholder = "{" + k + "}";
-    size_t pos = 0;
-    while ((pos = result.find(placeholder, pos)) != std::string::npos) {
-      result.replace(pos, placeholder.length(), v);
-      pos += v.length();
-    }
-  }
-  return result;
-}
-
-void BOText::SetParam(const std::string &key, const std::string &value) {
-  params[key] = value;
-  RefreshText();
-}
-
-void BOText::SetParam(const std::string &key, float value) {
-  SetParam(key, std::to_string(value));
-}
-
-void BOText::SetParam(const std::string &key, int value) {
-  SetParam(key, std::to_string(value));
 }
 
 void BOText::SetText(const std::string &content, bool plain) {
@@ -50,66 +17,143 @@ void BOText::SetText(const std::string &content, bool plain) {
       std::string rawText = LangManager::GetText(langKey);
       displayText = ProcessPlaceholders(rawText);
     }
-    if (displayText == "") {
-      displayText = " ";
+  }
+
+  if (displayText.empty())
+    displayText = " ";
+  RefreshText();
+}
+
+void BOText::RefreshText() {
+  displayText = LangManager::GetText(langKey);
+  auto glyphIds = DecodeUTF8(displayText);
+  int totalW = 0;
+  int maxH = LangManager::GetBMLineHeight() * scale;
+  uint32_t prevId = 0;
+
+  for (uint32_t id : glyphIds) {
+    const BMGlyph *g = LangManager::GetBMGlyph(id);
+    if (!g)
+      continue;
+
+    totalW += g->xadvance;
+    if (prevId != 0) {
+      totalW += LangManager::GetBMKerning(prevId, id) * scale;
     }
-    RefreshText();
+    prevId = id;
+  }
+
+  drawRect.w = totalW;
+  drawRect.h = maxH;
+  drawRect.x = pos.x - (centered ? (totalW / 2) : 0);
+  drawRect.y = pos.y;
+}
+
+std::vector<uint32_t> BOText::DecodeUTF8(const std::string &str) const {
+  std::vector<uint32_t> res;
+  for (size_t i = 0; i < str.length();) {
+    uint32_t ch = 0;
+    unsigned char c = str[i];
+    if (c < 0x80) {
+      ch = c;
+      i += 1;
+    } else if (c < 0xE0) {
+      ch = ((c & 0x1F) << 6) | (str[i + 1] & 0x3F);
+      i += 2;
+    } else if (c < 0xF0) {
+      ch =
+          ((c & 0x0F) << 12) | ((str[i + 1] & 0x3F) << 6) | (str[i + 2] & 0x3F);
+      i += 3;
+    } else {
+      ch = ((c & 0x07) << 18) | ((str[i + 1] & 0x3F) << 12) |
+           ((str[i + 2] & 0x3F) << 6) | (str[i + 3] & 0x3F);
+      i += 4;
+    }
+    res.push_back(ch);
+  }
+  return res;
+}
+
+void BOText::Draw() {
+  SDL_Texture *tex = LangManager::GetBMTexture();
+  if (!tex || displayText.empty())
+    return;
+
+  // 设置全局色调和透明度
+  SDL_SetTextureColorMod(tex, color.r, color.g, color.b);
+  SDL_SetTextureAlphaMod(tex, (Uint8)(alpha * 255.0f));
+
+  auto glyphIds = DecodeUTF8(displayText);
+  float curX = (float)drawRect.x;
+  float curY = (float)drawRect.y;
+  uint32_t prevId = 0;
+
+  for (uint32_t id : glyphIds) {
+    if (id == '\n') {
+      curX = (float)drawRect.x;
+      curY += (float)drawRect.h;
+      prevId = 0;
+      continue;
+    }
+
+    const BMGlyph *g = LangManager::GetBMGlyph(id);
+    if (!g)
+      continue;
+
+    // 应用字间距微调
+    if (prevId != 0) {
+      curX += LangManager::GetBMKerning(prevId, id) * scale;
+    }
+
+    // 源矩形 (纹理图集)
+    SDL_FRect src = {(float)g->x, (float)g->y, (float)g->width,
+                     (float)g->height};
+
+    // 目标矩形 (屏幕位置 + 偏移)
+    SDL_FRect dst = {curX + g->xoffset, curY + g->yoffset, (float)(g->width * scale),
+                     (float)(g->height * scale)};
+
+    SDL_RenderTexture(renderer, tex, &src, &dst);
+
+    // 步进
+    curX += g->xadvance;
+    prevId = id;
   }
 }
 
+// 其余接口实现
+void BOText::SetParam(const std::string &key, const std::string &value) {
+  params[key] = value;
+  std::string rawText = LangManager::GetText(langKey);
+  displayText = ProcessPlaceholders(rawText);
+  RefreshText();
+}
+
+void BOText::SetParam(const std::string &key, float value) {
+  SetParam(key, std::to_string(value));
+}
+void BOText::SetParam(const std::string &key, int value) {
+  SetParam(key, std::to_string(value));
+}
 void BOText::SetPosition(SDL_Point p) {
   pos = p;
   RefreshText();
 }
-
 SDL_Point BOText::GetPosition() const { return pos; }
-
 void BOText::SetColor(SDL_Color c) { color = c; }
-
 void BOText::SetAlpha(float a) { alpha = a; }
-
-SDL_Point BOText::GetSize() const { return {drawRect.w, drawRect.h}; }
-
-void BOText::RefreshText() {
-  if (textTexture) {
-    SDL_DestroyTexture(textTexture);
-    textTexture = nullptr;
-  }
-  TTF_Font *font = LangManager::GetFont();
-  int originalSize = TTF_GetFontSize(font);
-  TTF_SetFontSize(font, fontSize);
-  SDL_Surface *surface =
-      TTF_RenderText_Solid_Wrapped(font, displayText.c_str(), 0, WHITE, 0);
-  TTF_SetFontSize(font, originalSize);
-  if (!surface) {
-    LogManager::Error(std::string("Can't create text surface:") +
-                      SDL_GetError());
-    return;
-  }
-  textTexture = SDL_CreateTextureFromSurface(renderer, surface);
-  if (!textTexture) {
-    LogManager::Error(std::string("Can't create text texture:") +
-                      SDL_GetError());
-    SDL_DestroySurface(surface);
-    return;
-  }
-  SDL_DestroySurface(surface);
-  float w, h;
-  SDL_GetTextureSize(textTexture, &w, &h);
-  drawRect.w = (int)w;
-  drawRect.h = (int)h;
-  drawRect.x = pos.x - (centered ? drawRect.w / 2.0f : 0.0f);
-  drawRect.y = pos.y;
-}
-
+float BOText::GetScale() const { return scale; }
 void BOText::Update(float dt) {}
 
-void BOText::Draw() {
-  if (!textTexture)
-    return;
-  SDL_SetTextureColorMod(textTexture, color.r, color.g, color.b);
-  SDL_SetTextureAlphaMod(textTexture, (Uint8)(alpha * 255));
-  SDL_FRect dst = {(float)drawRect.x, (float)drawRect.y, (float)drawRect.w,
-                   (float)drawRect.h};
-  SDL_RenderTexture(renderer, textTexture, nullptr, &dst);
+std::string BOText::ProcessPlaceholders(const std::string &text) const {
+  std::string result = text;
+  for (const auto &[k, v] : params) {
+    std::string placeholder = "{" + k + "}";
+    size_t pos = 0;
+    while ((pos = result.find(placeholder, pos)) != std::string::npos) {
+      result.replace(pos, placeholder.length(), v);
+      pos += v.length();
+    }
+  }
+  return result;
 }
