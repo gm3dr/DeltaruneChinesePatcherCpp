@@ -130,7 +130,21 @@ int GameUtil::RunCommand(const std::string &exe,
   CloseHandle(pi.hThread);
   CloseHandle(hOutRead);
   CloseHandle(hErrRead);
+  auto normalize = [](std::string &s) {
+    std::string out;
+    out.reserve(s.size());
+    for (size_t i = 0; i < s.size(); ++i) {
+      if (s[i] == '\r') {
+        if (i + 1 < s.size() && s[i + 1] == '\n')
+          continue; // 跳过 \r
+      }
+      out.push_back(s[i]);
+    }
+    s.swap(out);
+  };
 
+  normalize(out);
+  normalize(err);
   return static_cast<int>(exitCode);
 }
 #else

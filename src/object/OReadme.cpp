@@ -13,7 +13,7 @@ OReadme::OReadme() {
 
   if (content == "")
     content = "Readme.NotFound";
-  readmeText = new BOText(content, {280, 150}, WHITE, 1);
+  readmeText = new BOText(content, {280, 150}, WHITE, false, 1.5);
 }
 
 OReadme::~OReadme() { delete readmeText; }

@@ -340,9 +340,9 @@ bool OInstallPatch::ExtractPatch(const fs::path &patchFile) {
   std::string stdoutStr, stderrStr;
   int ret = GameUtil::RunCommand(GameUtil::ConvertPath(sevenZip), args,
                                  stdoutStr, stderrStr);
-  LogManager::Info("[7z stdout]\n" + stdoutStr);
   if (ret != 0) {
     LogManager::Error("[Install] 7z failed, code=" + std::to_string(ret));
+    LogManager::Info("[7z stdout]\n" + stderrStr);
     if (!stderrStr.empty())
       LogManager::Error("[7z stderr]\n" + stderrStr);
     return false;
@@ -383,11 +383,11 @@ bool OInstallPatch::ApplyDelta(const fs::path &gamePath) {
       std::string stdoutStr, stderrStr;
       int ret = GameUtil::RunCommand(GameUtil::ConvertPath(xDelta3), args,
                                      stdoutStr, stderrStr);
-      LogManager::Info("[xdelta stdout]\n" + stdoutStr);
       if (ret != 0) {
         LogManager::Error(
             "[Install] xdelta failed for: " + value.get<std::string>() +
             ", code=" + std::to_string(ret));
+        LogManager::Info("[xdelta stdout]\n" + stdoutStr);
         if (!stderrStr.empty())
           LogManager::Error("[xdelta stderr]\n" + stderrStr);
         return false;
