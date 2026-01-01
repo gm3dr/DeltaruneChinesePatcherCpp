@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Atlas.h"
+#include <functional>
 class Animation {
 public:
   Animation() = default;
@@ -11,8 +12,9 @@ public:
   int GetFrameIndex();
   SDL_Surface *GetFrame();
   bool CheckFinished();
-  void Update();
-  void Draw(SDL_Renderer *renderer);
+  void Update(int delta);
+  void Draw(SDL_Renderer *renderer, int x, int y);
+  void SetCallback(std::function<void()>);
 
 private:
   int timer{0};
@@ -20,4 +22,5 @@ private:
   int frameIdx{0};
   bool loop{false};
   Atlas *atlas{nullptr};
+  std::function<void()> callback;
 };

@@ -1,6 +1,6 @@
 ﻿#include "Atlas.h"
-#include "Game.h"
 #include "SDL3_image/SDL_image.h"
+#include <iostream>
 #include <string>
 void Atlas::Load(const std::string name, int count) {
   imgList.clear();
@@ -14,7 +14,7 @@ void Atlas::Load(const std::string name, int count) {
           ("image/" + name + "_" + std::to_string(count) + ".png").c_str());
     }
     if (!img) {
-      Game::Log("Warning", SDL_GetError());
+      std::cerr << "[Warning] " << SDL_GetError() << std::endl;
     }
     imgList.push_back(img);
   }
