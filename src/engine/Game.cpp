@@ -1,6 +1,7 @@
 ﻿#include "Game.h"
 #include "SDL3/SDL_render.h"
 #include "Scene.h"
+#include "Util.h"
 #include <chrono>
 #include <iostream>
 #include <unordered_map>
@@ -36,6 +37,7 @@ void Game::Init() {
     return;
   }
   SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
+  Util::LoadAssets(renderer);
   running = true;
 }
 

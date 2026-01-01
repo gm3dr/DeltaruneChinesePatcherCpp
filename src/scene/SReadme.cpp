@@ -11,7 +11,6 @@ void SReadme::Input(SDL_Event *event) {
   }
 }
 void SReadme::Draw(SDL_Renderer *renderer) {
-  SDL_Texture *tex = IMG_LoadTexture(renderer, "image/bg_static.png");
-  SDL_RenderTexture(renderer, tex, nullptr, nullptr);
+  SDL_RenderTexture(renderer, Asset::imgbgStatic.Get(0), nullptr, nullptr);
 }
 void SReadme::Exit() { std::cout << "Readme离开场景" << std::endl; }

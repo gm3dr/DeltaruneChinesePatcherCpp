@@ -2,7 +2,6 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include <functional>
-#include <iostream>
 void Animation::Reset() {
   timer = 0;
   frameIdx = 0;
@@ -11,7 +10,7 @@ void Animation::SetInterval(int interval) { frameInterval = interval; }
 void Animation::SetLoop(bool isLoop) { loop = isLoop; }
 void Animation::SetAtlas(Atlas *newAtlas) { atlas = newAtlas; }
 int Animation::GetFrameIndex() { return frameIdx; }
-SDL_Surface *Animation::GetFrame() { return atlas->Get(frameIdx); }
+SDL_Texture *Animation::GetFrame() { return atlas->Get(frameIdx); }
 bool Animation::CheckFinished() {
   if (loop)
     return false;
@@ -32,16 +31,11 @@ void Animation::Update(int delta) {
 void Animation::Draw(SDL_Renderer *renderer, int x, int y) {
   if (!renderer)
     return;
-  SDL_Texture *texture =
-      SDL_CreateTextureFromSurface(renderer, atlas->Get(frameInterval));
-  if (!texture) {
-    std::cerr << "[Warning] " << SDL_GetError() << std::endl;
-    return;
-  }
-  float w, h;
-  SDL_GetTextureSize(texture, &w, &h);
-  SDL_FRect dst{x * 1.0f, y * 1.0f, w, h};
-  SDL_RenderTexture(renderer, texture, nullptr, &dst);
+  drawRect.x = x * 1.0;
+  drawRect.y = y * 1.0;
+  SDL_Texture *tex = atlas->Get(frameInterval);
+  SDL_GetTextureSize(tex, &(drawRect.w), &(drawRect.h));
+  SDL_RenderTexture(renderer, tex, nullptr, &drawRect);
 }
 void Animation::SetCallback(std::function<void()> newCallback) {
   callback = newCallback;

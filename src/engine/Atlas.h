@@ -4,12 +4,12 @@
 #include <vector>
 class Atlas {
 public:
-  void Load(const std::string name, int count);
-  SDL_Surface* Get(int idx);
-  void Add(SDL_Surface *img);
+  void Load(SDL_Renderer *renderer, const std::string name, int count);
+  SDL_Texture *Get(int idx);
+  void Add(SDL_Texture *img);
   int GetCount();
   void Clear();
 
 private:
-  std::vector<SDL_Surface*> imgList{};
+  std::vector<SDL_Texture *> imgList{};
 };

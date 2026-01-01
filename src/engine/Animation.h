@@ -10,7 +10,7 @@ public:
   void SetLoop(bool isLoop);
   void SetAtlas(Atlas *newAlas);
   int GetFrameIndex();
-  SDL_Surface *GetFrame();
+  SDL_Texture *GetFrame();
   bool CheckFinished();
   void Update(int delta);
   void Draw(SDL_Renderer *renderer, int x, int y);
@@ -21,6 +21,7 @@ private:
   int frameInterval{0};
   int frameIdx{0};
   bool loop{false};
+  SDL_FRect drawRect;
   Atlas *atlas{nullptr};
   std::function<void()> callback;
 };

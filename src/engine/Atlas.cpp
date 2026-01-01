@@ -1,17 +1,19 @@
 ﻿#include "Atlas.h"
+#include "SDL3/SDL_render.h"
 #include "SDL3_image/SDL_image.h"
 #include <iostream>
 #include <string>
-void Atlas::Load(const std::string name, int count) {
+void Atlas::Load(SDL_Renderer *renderer, const std::string name, int count) {
   imgList.clear();
   imgList.resize(count);
   for (int i = 0; i < count; i++) {
-    SDL_Surface *img;
+    SDL_Texture *img;
     if (count == 1) {
-      img = IMG_Load(("image/" + name + ".png").c_str());
+      img = IMG_LoadTexture(renderer, ("image/" + name + ".png").c_str());
     } else {
-      img = IMG_Load(
-          ("image/" + name + "_" + std::to_string(count) + ".png").c_str());
+      img = IMG_LoadTexture(
+          renderer,
+          ("image/" + name + "_" + std::to_string(i) + ".png").c_str());
     }
     if (!img) {
       std::cerr << "[Warning] " << SDL_GetError() << std::endl;
@@ -19,12 +21,12 @@ void Atlas::Load(const std::string name, int count) {
     imgList.push_back(img);
   }
 }
-SDL_Surface *Atlas::Get(int idx) {
+SDL_Texture *Atlas::Get(int idx) {
   if (idx < 0 || idx >= GetCount())
     return nullptr;
   return imgList[idx];
 }
-void Atlas::Add(SDL_Surface *img) {
+void Atlas::Add(SDL_Texture *img) {
   if (img)
     imgList.push_back(img);
 }
