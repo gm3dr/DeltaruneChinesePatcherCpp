@@ -1,12 +1,16 @@
-add_requires(
-    "cpr",
-    "glfw",
-    "nlohmann_json",
-    "picosha2"
-)
 add_rules("mode.debug", "mode.release")
 set_languages("c++20")
+basic_libs = {
+    "nlohmann_json"
+}
+vendored_libs = {
+    "pkgconfig::sdl3",
+    "pkgconfig::sdl3-image"
+}
 
+for _, libname in ipairs(basic_libs) do
+    add_requires(libname)
+end
 for _, libname in ipairs(vendored_libs) do
     add_requires(libname, {system = true})
 end
@@ -18,12 +22,7 @@ target("deltarune_cnpatcher")
     add_files("src/**/*.cpp")
 
     -- packages
-    add_packages(
-        "cpr",
-        "glfw",
-        "nlohmann_json",
-        "picosha2"
-    )
+    add_packages(table.unpack(basic_libs))
     add_packages(table.unpack(vendored_libs))
     -- defines
     add_defines("UNICODE", "_UNICODE")
@@ -38,7 +37,7 @@ target("deltarune_cnpatcher")
 
     if is_plat("windows") and is_mode("release") then
         add_files("app/win.rc")
-        add_ldflags("/SUBSYSTEM:WINDOWS");
+     --   add_ldflags("/SUBSYSTEM:WINDOWS");
     end
 
     after_build(function (target)
