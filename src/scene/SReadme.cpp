@@ -2,8 +2,12 @@
 #include "../engine/Game.h"
 #include <SDL3_image/SDL_image.h>
 #include <iostream>
-void SReadme::Enter() { std::cout << "Readme初始化" << std::endl; }
-void SReadme::Update(int delta) { std::cout << "Readme场景更新" << std::endl; }
+void SReadme::Enter() {
+  animBgAnim.SetAtlas(&Asset::imgBgAnim);
+  animBgAnim.SetInterval(300);
+  animBgAnim.SetLoop(true);
+}
+void SReadme::Update(int delta) { animBgAnim.Update(delta); }
 void SReadme::Input(SDL_Event *event) {
   if (event->type == SDL_EVENT_KEY_DOWN &&
       event->key.scancode == SDL_SCANCODE_A) {
@@ -11,6 +15,6 @@ void SReadme::Input(SDL_Event *event) {
   }
 }
 void SReadme::Draw(SDL_Renderer *renderer) {
-  SDL_RenderTexture(renderer, Asset::imgbgStatic.Get(0), nullptr, nullptr);
+  animBgAnim.Draw(renderer, 200, 200);
 }
 void SReadme::Exit() { std::cout << "Readme离开场景" << std::endl; }

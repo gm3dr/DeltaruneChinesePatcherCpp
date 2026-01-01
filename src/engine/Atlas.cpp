@@ -1,6 +1,5 @@
 ﻿#include "Atlas.h"
-#include "SDL3/SDL_render.h"
-#include "SDL3_image/SDL_image.h"
+#include <SDL3_image/SDL_image.h>
 #include <iostream>
 #include <string>
 void Atlas::Load(SDL_Renderer *renderer, const std::string name, int count) {
@@ -18,7 +17,7 @@ void Atlas::Load(SDL_Renderer *renderer, const std::string name, int count) {
     if (!img) {
       std::cerr << "[Warning] " << SDL_GetError() << std::endl;
     }
-    imgList.push_back(img);
+    imgList[i] = img;
   }
 }
 SDL_Texture *Atlas::Get(int idx) {

@@ -1,5 +1,7 @@
 ﻿#pragma once
+#include "../engine/Animation.h"
 #include "../engine/Scene.h"
+
 class SReadme : public Scene {
 public:
   SReadme() = default;
@@ -10,4 +12,7 @@ public:
   void Update(int delta);
   void Input(SDL_Event *event);
   void Exit();
+
+private:
+  Animation animBgAnim;
 };

@@ -1,5 +1,4 @@
 ﻿#include "Game.h"
-#include "SDL3/SDL_render.h"
 #include "Scene.h"
 #include "Util.h"
 #include <chrono>
@@ -10,6 +9,7 @@ SDL_Window *Game::window{nullptr};
 SDL_Renderer *Game::renderer{nullptr};
 SDL_Event Game::event{};
 Scene *Game::currentScene{nullptr};
+int Game::lastTime{0};
 std::unordered_map<SceneType, Scene *> Game::sceneList{};
 bool Game::running{false};
 std::ofstream Game::logFile{};
@@ -51,7 +51,9 @@ void Game::Log(const std::string type, const std::string msg) {
 
 void Game::Run() {
   while (running) {
-    int startFrame = SDL_GetTicks();
+    int startTime = SDL_GetTicks();
+    int delta = startTime - lastTime;
+    lastTime = startTime;
     // input
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_EVENT_QUIT) {
@@ -60,14 +62,15 @@ void Game::Run() {
       }
       currentScene->Input(&event);
     }
-    currentScene->Update(SDL_GetTicks() - startFrame);
+    currentScene->Update(delta);
+    lastTime = SDL_GetTicks();
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     currentScene->Draw(renderer);
     SDL_RenderPresent(renderer);
-    int endFrame = SDL_GetTicks();
-    if (endFrame - startFrame <= INTERVAL) {
-      SDL_Delay(INTERVAL - (endFrame - startFrame));
+    int endTime = SDL_GetTicks();
+    if (endTime - startTime <= INTERVAL) {
+      SDL_Delay(INTERVAL - (endTime - startTime));
     }
   }
 }

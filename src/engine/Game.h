@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "SDL3/SDL_render.h"
 #include <SDL3/SDL.h>
 #include <fstream>
 #include <string>
@@ -19,7 +18,8 @@ private:
   static std::unordered_map<SceneType, Scene *> sceneList;
   static bool running;
   static std::ofstream logFile;
-  constexpr static int FPS{5};
+  static int lastTime;
+  constexpr static int FPS{120};
   constexpr static int INTERVAL{1000 / FPS};
   constexpr static int BASEWIDTH{960};
   constexpr static int BASEHEIGHT{720};
