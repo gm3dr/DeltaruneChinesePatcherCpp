@@ -5,7 +5,8 @@ basic_libs = {
 }
 vendored_libs = {
     "pkgconfig::sdl3",
-    "pkgconfig::sdl3-image"
+    "pkgconfig::sdl3-image",
+    "pkgconfig::sdl3-ttf"
 }
 
 for _, libname in ipairs(basic_libs) do

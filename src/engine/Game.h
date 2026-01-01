@@ -20,12 +20,9 @@ private:
   static bool running;
   static std::ofstream logFile;
   constexpr static int FPS{5};
+  constexpr static int INTERVAL{1000 / FPS};
   constexpr static int BASEWIDTH{960};
   constexpr static int BASEHEIGHT{720};
-
-  static void Draw(SDL_Renderer *renderer);
-  static void Update();
-  static void Input(SDL_Event *event);
 
 public:
   static void Init();
@@ -34,7 +31,6 @@ public:
   static void SetScene(Scene *scene);
   static void CreateScene(SceneType type, Scene *scene);
   static void SwitchTo(SceneType type);
-  static SDL_Renderer* GetRenderer();
 };
 
 enum class SceneType { SReadme, SPatch, SAbout };

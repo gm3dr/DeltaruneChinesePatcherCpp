@@ -7,7 +7,7 @@ public:
 
   void Enter();
   void Draw(SDL_Renderer *renderer);
-  void Update();
+  void Update(int delta);
   void Input(SDL_Event *event);
   void Exit();
 };

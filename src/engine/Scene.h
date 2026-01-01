@@ -7,7 +7,7 @@ public:
   Scene() = default;
   virtual void Enter() {}
   virtual void Draw(SDL_Renderer *renderer) {}
-  virtual void Update() {}
+  virtual void Update(int delta) {}
   virtual void Input(SDL_Event *event) {}
   virtual void Exit() {}
 };

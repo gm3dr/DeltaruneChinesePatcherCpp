@@ -58,14 +58,14 @@ void Game::Run() {
       }
       currentScene->Input(&event);
     }
-    currentScene->Update();
+    currentScene->Update(SDL_GetTicks() - startFrame);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     currentScene->Draw(renderer);
     SDL_RenderPresent(renderer);
     int endFrame = SDL_GetTicks();
-    if (endFrame - startFrame <= 1000 / FPS) {
-      SDL_Delay(1000 / FPS - (endFrame - startFrame));
+    if (endFrame - startFrame <= INTERVAL) {
+      SDL_Delay(INTERVAL - (endFrame - startFrame));
     }
   }
 }
@@ -95,7 +95,3 @@ void Game::SwitchTo(SceneType sceneId) {
   currentScene = (*result).second;
   currentScene->Enter();
 }
-void Game::Draw(SDL_Renderer *renderer) { currentScene->Draw(renderer); }
-void Game::Input(SDL_Event *event) { currentScene->Input(event); }
-void Game::Update() { currentScene->Update(); }
-SDL_Renderer *Game::GetRenderer() { return renderer; }
