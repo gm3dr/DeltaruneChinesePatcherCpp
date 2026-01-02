@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../engine/Animation.h"
+#include "../engine/Camera.h"
 #include "../engine/Scene.h"
 
 class SReadme : public Scene {
@@ -15,4 +16,5 @@ public:
 
 private:
   Animation animBgAnim;
+  Camera camera;
 };
