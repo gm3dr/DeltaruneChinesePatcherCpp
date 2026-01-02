@@ -2,7 +2,9 @@
 #include "../engine/Game.h"
 #include <SDL3_image/SDL_image.h>
 #include <iostream>
-void SAbout::Enter() { std::cout << "SAbout初始化" << std::endl; }
+void SAbout::Enter() {
+  std::cout << "SAbout初始化" << std::endl;
+}
 void SAbout::Update(int delta) { std::cout << "SAbout场景更新" << std::endl; }
 void SAbout::Input(SDL_Event *event) {
   if (event->type == SDL_EVENT_KEY_DOWN &&

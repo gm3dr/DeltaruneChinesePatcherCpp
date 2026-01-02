@@ -5,9 +5,9 @@ public:
   SAbout() = default;
   ~SAbout() = default;
 
-  void Enter();
-  void Draw(SDL_Renderer *renderer);
-  void Update(int delta);
-  void Input(SDL_Event *event);
-  void Exit();
+  void Enter() override;
+  void Draw(SDL_Renderer *renderer) override;
+  void Update(int delta) override;
+  void Input(SDL_Event *event) override;
+  void Exit() override;
 };
