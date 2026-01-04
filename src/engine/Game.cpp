@@ -1,6 +1,6 @@
 ﻿#include "Game.h"
+#include "Camera.h"
 #include "Scene.h"
-#include "Util.h"
 #include <chrono>
 #include <iostream>
 #include <unordered_map>
@@ -13,6 +13,7 @@ int Game::lastTime{0};
 std::unordered_map<SceneType, Scene *> Game::sceneList{};
 bool Game::running{false};
 std::ofstream Game::logFile{};
+Camera Game::camera{};
 
 void Game::Init() {
   logFile = std::ofstream("log.txt");
@@ -37,7 +38,7 @@ void Game::Init() {
     return;
   }
   SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
-  Util::LoadAssets(renderer);
+  Asset::LoadAssets(renderer);
   running = true;
 }
 
@@ -66,7 +67,7 @@ void Game::Run() {
     lastTime = SDL_GetTicks();
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    currentScene->Draw(renderer);
+    currentScene->Draw(renderer, camera);
     SDL_RenderPresent(renderer);
     int endTime = SDL_GetTicks();
     if (endTime - startTime <= INTERVAL) {

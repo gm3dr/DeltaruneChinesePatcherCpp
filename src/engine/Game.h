@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 class Scene;
+class Camera;
 enum class SceneType { SReadme, SPatch, SAbout };
 class Game {
 public:
@@ -24,6 +25,7 @@ private:
   static SDL_Renderer *renderer;
   static SDL_Event event;
   static Scene *currentScene;
+  static Camera camera;
   static std::unordered_map<SceneType, Scene *> sceneList;
   static bool running;
   static std::ofstream logFile;
