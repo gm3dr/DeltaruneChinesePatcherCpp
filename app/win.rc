@@ -1,3 +1,0 @@
-﻿#include "winres.h"
-
-IDI_ICON1 ICON "icon.ico"
