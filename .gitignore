@@ -1,0 +1,8 @@
+/*
+!/deps
+!/src/*.h
+!/src/*.cpp
+!/app
+!/asset
+!/LICENSE
+!/CmakeLists.txt

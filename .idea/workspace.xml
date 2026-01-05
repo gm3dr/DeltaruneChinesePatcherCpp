@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
+    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
+  </component>
+  <component name="CMakePresetLoader"><![CDATA[{
+  "useNewFormat": true
+}]]></component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="deltarune_cnpatcher" targetName="deltarune_cnpatcher" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" ENABLED="true" CONFIG_NAME="Release" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0bbb0a7d-9507-4e91-9331-93d3d77708c9" name="更改" comment="new file">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/linux/7z" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/linux/hpatchz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/win/7z.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/win/hpatchz.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/font/main.fnt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/font/main_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/bgAnim_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/bgAnim_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/bgAnim_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/bgAnim_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/bgAnim_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/bgStatic.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/black.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/btnDisabled.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/btnEnabled.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/btnPressed.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/btnSelected.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image/icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lang/zh_CN.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lang/zh_TW.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme-zh_CN.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme-zh_TW.txt" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/engine/Game.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/engine/Game.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main.cpp" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="mJrEaUk3" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "CMake 应用程序.deltarune_cnpatcher.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "RunOnceActivity.west.config.association.type.startup.service": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.first.attach.projects": "true",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="0bbb0a7d-9507-4e91-9331-93d3d77708c9" name="更改" comment="" />
+      <created>1767585152370</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1767585152370</updated>
+      <workItem from="1767585154185" duration="1247000" />
+      <workItem from="1767586489702" duration="983000" />
+    </task>
+    <task id="LOCAL-00001" summary="new file">
+      <option name="closed" value="true" />
+      <created>1767587051208</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1767587051208</updated>
+    </task>
+    <task id="LOCAL-00002" summary="new file">
+      <option name="closed" value="true" />
+      <created>1767587138212</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1767587138212</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="new file" />
+    <option name="LAST_COMMIT_MESSAGE" value="new file" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/engine/Game.cpp</url>
+          <line>22</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

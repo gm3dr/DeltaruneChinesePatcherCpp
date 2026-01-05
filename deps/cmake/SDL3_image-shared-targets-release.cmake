@@ -1,0 +1,93 @@
+#----------------------------------------------------------------
+# Generated CMake target import file for configuration "Release".
+#----------------------------------------------------------------
+
+# Commands may need to know the format version.
+set(CMAKE_IMPORT_FILE_VERSION 1)
+
+# Import target "SDL3_image::SDL3_image-shared" for configuration "Release"
+set_property(TARGET SDL3_image::SDL3_image-shared APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::SDL3_image-shared PROPERTIES
+  IMPORTED_IMPLIB_RELEASE "${_IMPORT_PREFIX}/lib/SDL3_image.lib"
+  IMPORTED_LINK_DEPENDENT_LIBRARIES_RELEASE "SDL3::SDL3-shared"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/SDL3_image.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::SDL3_image-shared )
+list(APPEND _cmake_import_check_files_for_SDL3_image::SDL3_image-shared "${_IMPORT_PREFIX}/lib/SDL3_image.lib" "${_IMPORT_PREFIX}/bin/SDL3_image.dll" )
+
+# Import target "SDL3_image::dav1d" for configuration "Release"
+set_property(TARGET SDL3_image::dav1d APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::dav1d PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/dav1d.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::dav1d )
+list(APPEND _cmake_import_check_files_for_SDL3_image::dav1d "${_IMPORT_PREFIX}/bin/dav1d.dll" )
+
+# Import target "SDL3_image::aom" for configuration "Release"
+set_property(TARGET SDL3_image::aom APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::aom PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/aom.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::aom )
+list(APPEND _cmake_import_check_files_for_SDL3_image::aom "${_IMPORT_PREFIX}/bin/aom.dll" )
+
+# Import target "SDL3_image::external_libavif" for configuration "Release"
+set_property(TARGET SDL3_image::external_libavif APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::external_libavif PROPERTIES
+  IMPORTED_LINK_DEPENDENT_LIBRARIES_RELEASE "SDL3_image::dav1d;SDL3_image::aom"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/libavif-16.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::external_libavif )
+list(APPEND _cmake_import_check_files_for_SDL3_image::external_libavif "${_IMPORT_PREFIX}/bin/libavif-16.dll" )
+
+# Import target "SDL3_image::external_libpng" for configuration "Release"
+set_property(TARGET SDL3_image::external_libpng APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::external_libpng PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/libpng16-16.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::external_libpng )
+list(APPEND _cmake_import_check_files_for_SDL3_image::external_libpng "${_IMPORT_PREFIX}/bin/libpng16-16.dll" )
+
+# Import target "SDL3_image::external_libtiff" for configuration "Release"
+set_property(TARGET SDL3_image::external_libtiff APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::external_libtiff PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/tiff.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::external_libtiff )
+list(APPEND _cmake_import_check_files_for_SDL3_image::external_libtiff "${_IMPORT_PREFIX}/bin/tiff.dll" )
+
+# Import target "SDL3_image::external_libwebp" for configuration "Release"
+set_property(TARGET SDL3_image::external_libwebp APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::external_libwebp PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/libwebp.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::external_libwebp )
+list(APPEND _cmake_import_check_files_for_SDL3_image::external_libwebp "${_IMPORT_PREFIX}/bin/libwebp.dll" )
+
+# Import target "SDL3_image::external_webpdemux" for configuration "Release"
+set_property(TARGET SDL3_image::external_webpdemux APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::external_webpdemux PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/libwebpdemux.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::external_webpdemux )
+list(APPEND _cmake_import_check_files_for_SDL3_image::external_webpdemux "${_IMPORT_PREFIX}/bin/libwebpdemux.dll" )
+
+# Import target "SDL3_image::external_libwebpmux" for configuration "Release"
+set_property(TARGET SDL3_image::external_libwebpmux APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(SDL3_image::external_libwebpmux PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/libwebpmux.dll"
+  )
+
+list(APPEND _cmake_import_check_targets SDL3_image::external_libwebpmux )
+list(APPEND _cmake_import_check_files_for_SDL3_image::external_libwebpmux "${_IMPORT_PREFIX}/bin/libwebpmux.dll" )
+
+# Commands beyond this point should not need to know the version.
+set(CMAKE_IMPORT_FILE_VERSION)
